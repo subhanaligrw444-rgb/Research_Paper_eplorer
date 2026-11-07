@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Paper Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b1d33;--navy2:#14304d;--teal:#12a594;--teal-d:#0b7d70;--teal-s:#e2f6f3;
+  --amber:#f0a935;--amber-s:#fdf1d8;--indigo:#3f5fa8;--indigo-s:#e8edf8;
+  --bg:#eef2f6;--card:#fff;--text:#13202e;--muted:#68788a;--line:#e0e6ee;
+  --shadow:0 1px 2px rgba(11,29,51,.05),0 12px 28px -14px rgba(11,29,51,.22);
+  --sans:"Manrope","Segoe UI",system-ui,Arial,sans-serif;--serif:"Newsreader",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.app{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:260px;flex-shrink:0;background:linear-gradient(180deg,var(--navy),#0f2640);color:#b7c7d8;padding:28px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:12px;margin:0 8px 30px}
+.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#1ec2ae);color:#fff;font:600 24px var(--serif)}
+.brand h2{font-size:16px;color:#fff;letter-spacing:-.2px}
+.brand p{font-size:11px;color:#7f95ab;margin-top:3px}
+.nav-label{color:#647c94;font-size:11px;font-weight:700;margin:22px 12px 8px}
+.nav-item{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:#aebfd0;text-align:left;padding:11px 12px;margin:2px 0;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;position:relative;transition:.15s}
+.nav-item span{width:20px;text-align:center;font-size:16px}
+.nav-item:hover:not(.active){background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(18,165,148,.16);color:#fff;font-weight:700}
+.nav-item.active::before{content:"";position:absolute;left:-18px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--amber)}
+.side-card{margin-top:auto;padding:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px}
+.side-card strong{color:#fff;font-size:13px}
+.side-card p{margin-top:6px;font-size:12px;line-height:1.6;color:#92a6ba}
+.bar{height:6px;background:rgba(255,255,255,.1);border-radius:6px;margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;width:3%;background:linear-gradient(90deg,var(--teal),var(--amber));border-radius:6px}
+
+/* Main */
+.main{min-width:0;flex:1;padding:28px 34px 40px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+.topbar h1{font:600 30px var(--serif);letter-spacing:-.5px}
+.topbar p{color:var(--muted);margin-top:4px;font-size:14px}
+.profile{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 8px;border:1px solid var(--line);border-radius:40px;background:var(--card)}
+.avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:13px}
+.profile strong{font-size:13px}.profile small{display:block;margin-top:2px;color:var(--muted);font-size:11px}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(115deg,var(--navy) 0%,var(--navy2) 55%,#17566a 100%);color:#fff;border-radius:20px;padding:34px 36px;margin-bottom:22px;box-shadow:var(--shadow)}
+.hero::after{content:"";position:absolute;right:-70px;top:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(18,165,148,.45),transparent 68%)}
+.hero>*{position:relative;z-index:1}
+.pill{display:inline-block;background:rgba(240,169,53,.16);border:1px solid rgba(240,169,53,.5);color:#f7cd82;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px}
+.hero h2{font:600 28px/1.25 var(--serif);max-width:560px;margin:14px 0 8px}
+.hero p{color:#b6c8da;font-size:14px;line-height:1.65;max-width:520px}
+.hero-search{display:flex;gap:10px;margin-top:22px;max-width:620px;background:#fff;border-radius:14px;padding:6px;box-shadow:0 14px 30px -12px rgba(0,0,0,.5)}
+.hero-search input{flex:1;border:0;outline:0;padding:12px 14px;font-size:14px;color:var(--text);background:none;min-width:0}
+.hero-search button{border:0;background:var(--teal);color:#fff;font-weight:700;padding:0 22px;border-radius:10px;cursor:pointer;transition:.15s}
+.hero-search button:hover{background:var(--teal-d)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;min-width:0}
+.ico{display:grid;place-items:center;flex-shrink:0;width:46px;height:46px;border-radius:13px;font-size:20px;background:var(--teal-s);color:var(--teal-d)}
+.stat:nth-child(2) .ico{background:var(--indigo-s);color:var(--indigo)}
+.stat:nth-child(3) .ico{background:var(--amber-s);color:#a76c0f}
+.stat:nth-child(4) .ico{background:#e4f5ea;color:#2a9457}
+.stat small{color:var(--muted);font-size:12.5px;font-weight:600}
+.stat b{display:block;font:600 26px var(--serif);margin-top:2px;letter-spacing:-.4px}
+
+/* Insights */
+.insights{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.insight{padding:20px 22px}
+.insight h3{font:600 18px var(--serif)}
+.insight>p{color:var(--muted);font-size:12.5px;margin-top:3px}
+.bars{display:flex;align-items:flex-end;gap:18px;height:140px;margin-top:20px;padding:0 6px;border-bottom:1px solid var(--line)}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:6px}
+.col span{font-size:12px;font-weight:700;color:var(--navy)}
+.col i{display:block;width:100%;max-width:56px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--teal),#0d8a7b);min-height:3px;transition:height .4s}
+.years{display:flex;gap:18px;padding:8px 6px 0;font-size:12px;color:var(--muted);font-weight:600}
+.years span{flex:1;text-align:center}
+.split{display:flex;align-items:center;gap:22px;margin-top:18px}
+.donut{position:relative;width:128px;height:128px;border-radius:50%;flex-shrink:0}
+.donut::after{content:attr(data-total);position:absolute;inset:22px;border-radius:50%;background:#fff;display:grid;place-items:center;font:600 24px var(--serif)}
+.legend{list-style:none;display:grid;gap:10px;font-size:13px}
+.legend li{display:flex;align-items:center;gap:9px;color:#3a4a5c;font-weight:600}
+.legend i{width:11px;height:11px;border-radius:3px}
+.legend b{margin-left:auto;padding-left:14px;color:var(--navy)}
+
+/* Table card */
+.panel{overflow:hidden}
+.p-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:22px 24px;border-bottom:1px solid var(--line)}
+.p-head h2{font:600 21px var(--serif)}
+.p-head p{margin-top:4px;color:var(--muted);font-size:13px}
+.chip{background:var(--amber-s);color:#85570f;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:16px 24px;background:#f9fafc;border-bottom:1px solid var(--line)}
+.sbox{flex:1;min-width:230px;position:relative}
+.sbox span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.toolbar input,.toolbar select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#3a4a5c;font-size:13px}
+.sbox input{width:100%;padding-left:38px}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--teal);outline:3px solid var(--teal-s)}
+.btn{border:1px solid var(--line);background:#fff;color:#3a4a5c;border-radius:10px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.btn:hover:not(:disabled){background:var(--teal-s);border-color:var(--teal);color:var(--teal-d)}
+.btn:disabled{opacity:.45;cursor:default}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left}
+th{padding:0;background:#f5f7fa;border-bottom:1px solid var(--line)}
+th button{width:100%;border:0;background:none;text-align:left;padding:13px 18px;color:#586a7e;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+th button:hover{color:var(--teal-d)}
+th button.on{color:var(--navy)}
+th button .ar{margin-left:6px;color:var(--teal)}
+td{padding:15px 18px;border-bottom:1px solid #edf0f4;font-size:13px;vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:#f4fbfa}
+tbody tr:focus-visible{outline-offset:-2px}
+.ttl{min-width:270px;max-width:340px;font-weight:700;color:var(--navy);line-height:1.45}
+.au{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.au i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;font-style:normal;font-size:11px;font-weight:700}
+.yr{font-weight:700;color:#3a4a5c}
+.tag{display:inline-block;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
+.t-j{background:var(--teal-s);color:var(--teal-d)}.t-r{background:var(--amber-s);color:#85570f}.t-c{background:var(--indigo-s);color:var(--indigo)}
+.nw{white-space:nowrap;color:#3a4a5c}
+.doi{color:var(--teal-d);font-weight:600;text-decoration:none;white-space:nowrap}
+.doi:hover{text-decoration:underline}
+mark{background:#ffe9b3;color:inherit;border-radius:3px;padding:0 2px}
+.empty{display:none;text-align:center;padding:50px 20px;color:var(--muted);font-size:14px}
+.empty strong{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 24px;color:var(--muted);font-size:13px;background:#f9fafc}
+.pager{display:flex;gap:6px;align-items:center}
+.pager .btn{padding:7px 12px}
+.pager .btn.cur{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* Drawer */
+.veil{position:fixed;inset:0;background:rgba(11,29,51,.45);opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:#fff;z-index:21;transform:translateX(100%);transition:transform .3s;padding:28px;overflow-y:auto;box-shadow:-20px 0 40px -20px rgba(0,0,0,.3)}
+body.open .veil{opacity:1;pointer-events:auto}
+body.open .drawer{transform:none}
+.drawer h3{font:600 22px/1.3 var(--serif);margin:14px 0 18px;color:var(--navy)}
+.close{float:right;border:1px solid var(--line);background:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:16px}
+.close:hover{background:var(--teal-s)}
+.dl{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.dl div{display:flex;justify-content:space-between;gap:16px;padding:13px 16px;font-size:13px;border-bottom:1px solid var(--line)}
+.dl div:last-child{border-bottom:0}
+.dl dt{color:var(--muted);font-weight:600}.dl dd{font-weight:700;text-align:right;word-break:break-word}
+.open-btn{display:block;text-align:center;margin-top:20px;background:var(--teal);color:#fff;text-decoration:none;font-weight:700;padding:13px;border-radius:12px}
+.open-btn:hover{background:var(--teal-d)}
+
+.toast{position:fixed;right:24px;bottom:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:12px;font-size:13px;border-left:4px solid var(--amber);box-shadow:0 12px 30px -8px rgba(11,29,51,.5);transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s;z-index:30}
+.toast.show{transform:none;opacity:1}
+
+@media(max-width:1100px){.sidebar{width:210px}.main{padding:22px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.insights{grid-template-columns:1fr}}
+@media(max-width:720px){.sidebar{display:none}.main{padding:14px}.topbar h1{font-size:24px}.profile-t{display:none}.hero{padding:24px 20px}.hero h2{font-size:22px}.stats{gap:10px}.stat{padding:14px;gap:10px}.ico{width:38px;height:38px}.stat b{font-size:21px}.split{flex-direction:column;align-items:flex-start}.p-head,.toolbar,.foot{padding-left:16px;padding-right:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">R</div><div><h2>Research Explorer</h2><p>Academic discovery</p></div></div>
+    <p class="nav-label">Workspace</p>
+    <button class="nav-item" data-section="Dashboard"><span>▦</span> Dashboard</button>
+    <button class="nav-item active" data-section="Publications"><span>▤</span> Publications</button>
+    <button class="nav-item" data-section="Advanced Search"><span>⌕</span> Advanced Search</button>
+    <p class="nav-label">Tools</p>
+    <button class="nav-item" data-section="Sorting Lab"><span>⇅</span> Sorting Lab</button>
+    <button class="nav-item" data-section="Algorithm Benchmarks"><span>◷</span> Algorithm Benchmarks</button>
+    <button class="nav-item" data-section="Data Management"><span>▣</span> Data Management</button>
+    <div class="side-card">
+      <strong>Dataset progress</strong>
+      <p>14 of 15,000 records loaded in this preview.</p>
+      <div class="bar"><i></i></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="page-title">Publication Explorer</h1><p id="page-subtitle">Discover and analyze scholarly publications</p></div>
+      <div class="profile"><div class="avatar">R</div><div class="profile-t"><strong>Researcher</strong><small>Local workspace</small></div></div>
+    </header>
+
+    <section class="hero">
+      <span class="pill">Preview mode · sample data</span>
+      <h2>Find any of 15,000 scholarly papers, then time how fast each algorithm finds it</h2>
+      <p>Browse Crossref metadata, filter by year and type, and get ready to benchmark searching and sorting.</p>
+      <div class="hero-search">
+        <input type="search" id="hero-input" placeholder="Search title, author, DOI or publisher" aria-label="Quick search">
+        <button id="hero-go">Search</button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><div class="ico">▤</div><div><small>Dataset target</small><b>15,000</b></div></div>
+      <div class="stat"><div class="ico">◎</div><div><small>Data source</small><b>Crossref</b></div></div>
+      <div class="stat"><div class="ico">▦</div><div><small>Dataset fields</small><b>11</b></div></div>
+      <div class="stat"><div class="ico">✓</div><div><small>Interface</small><b>Ready</b></div></div>
+    </section>
+
+    <section class="insights">
+      <div class="card insight">
+        <h3>Papers by year</h3><p id="bars-note">Matches your current filters</p>
+        <div class="bars" id="bars"></div>
+        <div class="years" id="years"></div>
+      </div>
+      <div class="card insight">
+        <h3>Paper types</h3><p>Share of matching papers</p>
+        <div class="split"><div class="donut" id="donut"></div><ul class="legend" id="legend"></ul></div>
+      </div>
+    </section>
+
+    <section class="card panel">
+      <div class="p-head">
+        <div><h2>Publications</h2><p>Select a row to see full details</p></div>
+        <span class="chip">Sample records</span>
+      </div>
+      <div class="toolbar">
+        <div class="sbox"><span>⌕</span><input type="search" id="search-input" placeholder="Filter by title, author, DOI or publisher" aria-label="Search sample publications"></div>
+        <select id="year-filter" aria-label="Filter by year"><option value="">All years</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option></select>
+        <select id="type-filter" aria-label="Filter by type"><option value="">All types</option><option>Journal Article</option><option>Review</option><option>Conference Paper</option></select>
+        <button class="btn" id="reset-button">Reset</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr id="head"></tr></thead>
+          <tbody id="publication-body"></tbody>
+        </table>
+        <div class="empty" id="empty-state"><strong>No papers match your search</strong>Try a different keyword or reset the filters.</div>
+      </div>
+      <div class="foot"><span id="result-count"></span><div class="pager" id="pager"></div></div>
+    </section>
+  </main>
+</div>
+
+<div class="veil" id="veil"></div>
+<aside class="drawer" id="drawer" aria-label="Paper details" aria-hidden="true"></aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// Demonstration records only. Replace with the real CSV dataset in the next step.
+const papers=[
+ {title:"Advances in Machine Learning for Scientific Discovery",authors:"A. Smith et al.",year:2024,type:"Journal Article",publisher:"Example Publisher",doi:"10.0000/example.001",cites:182},
+ {title:"A Survey of Large Language Models",authors:"B. Khan et al.",year:2023,type:"Review",publisher:"Example Publisher",doi:"10.0000/example.002",cites:940},
+ {title:"Efficient Algorithms for Large-Scale Data Processing",authors:"C. Ahmed et al.",year:2022,type:"Conference Paper",publisher:"Example Press",doi:"10.0000/example.003",cites:76},
+ {title:"Deep Learning Methods for Image Classification",authors:"D. Lee et al.",year:2024,type:"Journal Article",publisher:"Example Publisher",doi:"10.0000/example.004",cites:233},
+ {title:"Data Structures and Search Algorithm Evaluation",authors:"E. Ali et al.",year:2021,type:"Conference Paper",publisher:"Example Press",doi:"10.0000/example.005",cites:58},
+ {title:"Natural Language Processing: Recent Approaches",authors:"F. Taylor et al.",year:2023,type:"Review",publisher:"Example Publisher",doi:"10.0000/example.006",cites:411},
+ {title:"Binary Search Variants and Cache Behaviour",authors:"G. Rossi et al.",year:2022,type:"Journal Article",publisher:"Example Press",doi:"10.0000/example.007",cites:64},
+ {title:"Comparing Quick Sort and Merge Sort on Real Datasets",authors:"H. Nasir et al.",year:2023,type:"Conference Paper",publisher:"Example Publisher",doi:"10.0000/example.008",cites:97},
+ {title:"Open Metadata and the Future of Scholarly Publishing",authors:"I. Novak et al.",year:2021,type:"Review",publisher:"Example Press",doi:"10.0000/example.009",cites:129},
+ {title:"Graph Neural Networks for Citation Analysis",authors:"J. Park et al.",year:2024,type:"Journal Article",publisher:"Example Publisher",doi:"10.0000/example.010",cites:150},
+ {title:"Hash Tables Versus Trees for Bibliographic Lookup",authors:"K. Hassan et al.",year:2022,type:"Conference Paper",publisher:"Example Press",doi:"10.0000/example.011",cites:41},
+ {title:"Reproducibility in Computational Research",authors:"L. Moreau et al.",year:2021,type:"Journal Article",publisher:"Example Publisher",doi:"10.0000/example.012",cites:305},
+ {title:"Benchmarking Sorting Algorithms at Scale",authors:"M. Iqbal et al.",year:2024,type:"Conference Paper",publisher:"Example Press",doi:"10.0000/example.013",cites:33},
+ {title:"Trends in Open Access Citation Patterns",authors:"N. Berg et al.",year:2023,type:"Review",publisher:"Example Publisher",doi:"10.0000/example.014",cites:88}
+];
+const PAGE=7, years=[2021,2022,2023,2024];
+const cls={"Journal Article":"t-j","Review":"t-r","Conference Paper":"t-c"};
+const col={"Journal Article":"#12a594","Review":"#f0a935","Conference Paper":"#3f5fa8"};
+const cols=[["title","Title"],["authors","Authors"],["year","Year"],["type","Type"],["publisher","Publisher"],["doi","DOI"]];
+let sortKey="title",sortDir=1,page=1;
+
+const $=id=>document.getElementById(id);
+const search=$("search-input"),yf=$("year-filter"),tf=$("type-filter"),body=$("publication-body");
+function el(t,c,x){const n=document.createElement(t);if(c)n.className=c;if(x!==undefined)n.textContent=x;return n}
+
+function hl(parent,text,term){
+  if(!term){parent.append(text);return}
+  const i=text.toLowerCase().indexOf(term);
+  if(i<0){parent.append(text);return}
+  const m=el("mark","",text.slice(i,i+term.length));
+  parent.append(text.slice(0,i),m,text.slice(i+term.length));
+}
+
+function filtered(){
+  const term=search.value.trim().toLowerCase();
+  return papers.filter(p=>
+    [p.title,p.authors,p.doi,p.publisher,p.type].join(" ").toLowerCase().includes(term)&&
+    (!yf.value||String(p.year)===yf.value)&&(!tf.value||p.type===tf.value));
+}
+
+function renderHead(){
+  const tr=$("head");tr.replaceChildren();
+  cols.forEach(([k,label])=>{
+    const th=document.createElement("th");
+    const b=el("button",k===sortKey?"on":"",label);
+    b.append(el("span","ar",k===sortKey?(sortDir>0?"▲":"▼"):"⇅"));
+    b.onclick=()=>{sortDir=k===sortKey?-sortDir:1;sortKey=k;page=1;render()};
+    th.append(b);tr.append(th);
+  });
+}
+
+function renderCharts(list){
+  const counts=years.map(y=>list.filter(p=>p.year===y).length),max=Math.max(1,...counts);
+  $("bars").replaceChildren(...counts.map(n=>{const c=el("div","col"),i=el("i");i.style.height=(n/max*100*.78)+"%";c.append(el("span","",n),i);return c}));
+  $("years").replaceChildren(...years.map(y=>el("span","",y)));
+  const types=Object.keys(cls),tc=types.map(t=>list.filter(p=>p.type===t).length),total=list.length;
+  let acc=0;const stops=total?types.map((t,i)=>{const s=acc;acc+=tc[i]/total*100;return `${col[t]} ${s}% ${acc}%`}).join(","):"#e0e6ee 0 100%";
+  $("donut").style.background=`conic-gradient(${stops})`;$("donut").dataset.total=total;
+  $("legend").replaceChildren(...types.map((t,i)=>{const li=el("li"),d=el("i");d.style.background=col[t];li.append(d,t,el("b","",tc[i]));return li}));
+}
+
+function render(){
+  const term=search.value.trim().toLowerCase(),list=filtered();
+  list.sort((a,b)=>{const x=a[sortKey],y=b[sortKey];return (typeof x==="number"?x-y:String(x).localeCompare(String(y)))*sortDir});
+  const pages=Math.max(1,Math.ceil(list.length/PAGE));page=Math.min(page,pages);
+  const slice=list.slice((page-1)*PAGE,page*PAGE);
+  renderHead();renderCharts(list);body.replaceChildren();
+  slice.forEach(p=>{
+    const tr=document.createElement("tr");tr.tabIndex=0;
+    const t=el("td","ttl");hl(t,p.title,term);
+    const a=el("td"),w=el("div","au");w.append(el("i","",p.authors[0]));const s=el("span");hl(s,p.authors,term);w.append(s);a.append(w);
+    const ty=el("td");ty.append(el("span","tag "+cls[p.type],p.type));
+    const pu=el("td","nw");hl(pu,p.publisher,term);
+    const d=el("td"),l=el("a","doi");hl(l,p.doi,term);l.href="https://doi.org/"+encodeURI(p.doi);l.target="_blank";l.rel="noopener noreferrer";l.onclick=e=>e.stopPropagation();d.append(l);
+    tr.append(t,a,el("td","yr",p.year),ty,pu,d);
+    tr.onclick=()=>openDrawer(p);tr.onkeydown=e=>{if(e.key==="Enter")openDrawer(p)};
+    body.append(tr);
+  });
+  $("empty-state").style.display=list.length?"none":"block";
+  $("result-count").textContent=list.length?`Showing ${(page-1)*PAGE+1}–${(page-1)*PAGE+slice.length} of ${list.length} sample records`:"No records";
+  const pg=$("pager");pg.replaceChildren();
+  const mk=(txt,p,dis,cur)=>{const b=el("button","btn"+(cur?" cur":""),txt);b.disabled=dis;b.onclick=()=>{page=p;render()};return b};
+  pg.append(mk("Prev",page-1,page===1));
+  for(let i=1;i<=pages;i++)pg.append(mk(i,i,false,i===page));
+  pg.append(mk("Next",page+1,page===pages));
+}
+
+function openDrawer(p){
+  const d=$("drawer");d.replaceChildren();
+  const x=el("button","close","✕");x.setAttribute("aria-label","Close details");x.onclick=closeDrawer;
+  const h=el("h3","",p.title),tag=el("span","tag "+cls[p.type],p.type);
+  const dl=el("dl","dl");
+  [["Authors",p.authors],["Year",p.year],["Publisher",p.publisher],["DOI",p.doi],["Citations",p.cites]].forEach(([k,v])=>{const r=el("div");r.append(el("dt","",k),el("dd","",v));dl.append(r)});
+  const a=el("a","open-btn","Open on doi.org");a.href="https://doi.org/"+encodeURI(p.doi);a.target="_blank";a.rel="noopener noreferrer";
+  d.append(x,tag,h,dl,a);
+  document.body.classList.add("open");d.setAttribute("aria-hidden","false");x.focus();
+}
+function closeDrawer(){document.body.classList.remove("open");$("drawer").setAttribute("aria-hidden","true")}
+$("veil").onclick=closeDrawer;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
+
+[search,yf,tf].forEach(c=>c.addEventListener(c===search?"input":"change",()=>{page=1;render()}));
+$("reset-button").onclick=()=>{search.value=$("hero-input").value="";yf.value=tf.value="";sortKey="title";sortDir=1;page=1;render()};
+function heroSearch(){search.value=$("hero-input").value;page=1;render();search.closest(".panel").scrollIntoView({behavior:"smooth",block:"start"})}
+$("hero-go").onclick=heroSearch;$("hero-input").addEventListener("keydown",e=>{if(e.key==="Enter")heroSearch()});
+
+let tt;function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2600)}
+document.querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));b.classList.add("active");
+  const s=b.dataset.section,pub=s==="Publications";
+  if(!pub)toast(s+" will be added in a later project step.");
+  $("page-title").textContent=pub?"Publication Explorer":s;
+  $("page-subtitle").textContent=pub?"Discover and analyze scholarly publications":"Research Paper Explorer workspace";
+});
+render();
+</script>
+</body>
+</html>

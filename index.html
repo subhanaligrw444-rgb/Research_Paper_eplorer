@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Paper Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b1d33;--navy2:#14304d;--teal:#12a594;--teal-d:#0b7d70;--teal-s:#e2f6f3;
+  --amber:#f0a935;--amber-s:#fdf1d8;--indigo:#3f5fa8;--indigo-s:#e8edf8;
+  --bg:#eef2f6;--card:#fff;--text:#13202e;--muted:#68788a;--line:#e0e6ee;
+  --shadow:0 1px 2px rgba(11,29,51,.05),0 12px 28px -14px rgba(11,29,51,.22);
+  --sans:"Manrope","Segoe UI",system-ui,Arial,sans-serif;--serif:"Newsreader",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.app{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:260px;flex-shrink:0;background:linear-gradient(180deg,var(--navy),#0f2640);color:#b7c7d8;padding:28px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:12px;margin:0 8px 30px}
+.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#1ec2ae);color:#fff;font:600 24px var(--serif)}
+.brand h2{font-size:16px;color:#fff;letter-spacing:-.2px}
+.brand p{font-size:11px;color:#7f95ab;margin-top:3px}
+.nav-label{color:#647c94;font-size:11px;font-weight:700;margin:22px 12px 8px}
+.nav-item{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:#aebfd0;text-align:left;padding:11px 12px;margin:2px 0;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;position:relative;transition:.15s}
+.nav-item span{width:20px;text-align:center;font-size:16px}
+.nav-item:hover:not(.active){background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(18,165,148,.16);color:#fff;font-weight:700}
+.nav-item.active::before{content:"";position:absolute;left:-18px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--amber)}
+.side-card{margin-top:auto;padding:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px}
+.side-card strong{color:#fff;font-size:13px}
+.side-card p{margin-top:6px;font-size:12px;line-height:1.6;color:#92a6ba}
+.bar{height:6px;background:rgba(255,255,255,.1);border-radius:6px;margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;width:3%;background:linear-gradient(90deg,var(--teal),var(--amber));border-radius:6px}
+
+/* Main */
+.main{min-width:0;flex:1;padding:28px 34px 40px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+.topbar h1{font:600 30px var(--serif);letter-spacing:-.5px}
+.topbar p{color:var(--muted);margin-top:4px;font-size:14px}
+.profile{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 8px;border:1px solid var(--line);border-radius:40px;background:var(--card)}
+.avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:13px}
+.profile strong{font-size:13px}.profile small{display:block;margin-top:2px;color:var(--muted);font-size:11px}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(115deg,var(--navy) 0%,var(--navy2) 55%,#17566a 100%);color:#fff;border-radius:20px;padding:34px 36px;margin-bottom:22px;box-shadow:var(--shadow)}
+.hero::after{content:"";position:absolute;right:-70px;top:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(18,165,148,.45),transparent 68%)}
+.hero>*{position:relative;z-index:1}
+.pill{display:inline-block;background:rgba(240,169,53,.16);border:1px solid rgba(240,169,53,.5);color:#f7cd82;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px}
+.hero h2{font:600 28px/1.25 var(--serif);max-width:560px;margin:14px 0 8px}
+.hero p{color:#b6c8da;font-size:14px;line-height:1.65;max-width:520px}
+.hero-search{display:flex;gap:10px;margin-top:22px;max-width:620px;background:#fff;border-radius:14px;padding:6px;box-shadow:0 14px 30px -12px rgba(0,0,0,.5)}
+.hero-search input{flex:1;border:0;outline:0;padding:12px 14px;font-size:14px;color:var(--text);background:none;min-width:0}
+.hero-search button{border:0;background:var(--teal);color:#fff;font-weight:700;padding:0 22px;border-radius:10px;cursor:pointer;transition:.15s}
+.hero-search button:hover{background:var(--teal-d)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;min-width:0}
+.ico{display:grid;place-items:center;flex-shrink:0;width:46px;height:46px;border-radius:13px;font-size:20px;background:var(--teal-s);color:var(--teal-d)}
+.stat:nth-child(2) .ico{background:var(--indigo-s);color:var(--indigo)}
+.stat:nth-child(3) .ico{background:var(--amber-s);color:#a76c0f}
+.stat:nth-child(4) .ico{background:#e4f5ea;color:#2a9457}
+.stat small{color:var(--muted);font-size:12.5px;font-weight:600}
+.stat b{display:block;font:600 26px var(--serif);margin-top:2px;letter-spacing:-.4px}
+
+/* Insights */
+.insights{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.insight{padding:20px 22px}
+.insight h3{font:600 18px var(--serif)}
+.insight>p{color:var(--muted);font-size:12.5px;margin-top:3px}
+.bars{display:flex;align-items:flex-end;gap:18px;height:140px;margin-top:20px;padding:0 6px;border-bottom:1px solid var(--line)}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:6px}
+.col span{font-size:12px;font-weight:700;color:var(--navy)}
+.col i{display:block;width:100%;max-width:56px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--teal),#0d8a7b);min-height:3px;transition:height .4s}
+.years{display:flex;gap:18px;padding:8px 6px 0;font-size:12px;color:var(--muted);font-weight:600}
+.years span{flex:1;text-align:center}
+.split{display:flex;align-items:center;gap:22px;margin-top:18px}
+.donut{position:relative;width:128px;height:128px;border-radius:50%;flex-shrink:0}
+.donut::after{content:attr(data-total);position:absolute;inset:22px;border-radius:50%;background:#fff;display:grid;place-items:center;font:600 24px var(--serif)}
+.legend{list-style:none;display:grid;gap:10px;font-size:13px}
+.legend li{display:flex;align-items:center;gap:9px;color:#3a4a5c;font-weight:600}
+.legend i{width:11px;height:11px;border-radius:3px}
+.legend b{margin-left:auto;padding-left:14px;color:var(--navy)}
+
+/* Table card */
+.panel{overflow:hidden}
+.p-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:22px 24px;border-bottom:1px solid var(--line)}
+.p-head h2{font:600 21px var(--serif)}
+.p-head p{margin-top:4px;color:var(--muted);font-size:13px}
+.chip{background:var(--amber-s);color:#85570f;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:16px 24px;background:#f9fafc;border-bottom:1px solid var(--line)}
+.sbox{flex:1;min-width:230px;position:relative}
+.sbox span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.toolbar input,.toolbar select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#3a4a5c;font-size:13px}
+.sbox input{width:100%;padding-left:38px}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--teal);outline:3px solid var(--teal-s)}
+.btn{border:1px solid var(--line);background:#fff;color:#3a4a5c;border-radius:10px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.btn:hover:not(:disabled){background:var(--teal-s);border-color:var(--teal);color:var(--teal-d)}
+.btn:disabled{opacity:.45;cursor:default}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left}
+th{padding:0;background:#f5f7fa;border-bottom:1px solid var(--line)}
+th button{width:100%;border:0;background:none;text-align:left;padding:13px 18px;color:#586a7e;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+th button:hover{color:var(--teal-d)}
+th button.on{color:var(--navy)}
+th button .ar{margin-left:6px;color:var(--teal)}
+td{padding:15px 18px;border-bottom:1px solid #edf0f4;font-size:13px;vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:#f4fbfa}
+tbody tr:focus-visible{outline-offset:-2px}
+.ttl{min-width:270px;max-width:340px;font-weight:700;color:var(--navy);line-height:1.45}
+.au{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.au i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;font-style:normal;font-size:11px;font-weight:700}
+.yr{font-weight:700;color:#3a4a5c}
+.tag{display:inline-block;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
+.t-j{background:var(--teal-s);color:var(--teal-d)}.t-r{background:var(--amber-s);color:#85570f}.t-c{background:var(--indigo-s);color:var(--indigo)}
+.nw{white-space:nowrap;color:#3a4a5c}
+.doi{color:var(--teal-d);font-weight:600;text-decoration:none;white-space:nowrap}
+.doi:hover{text-decoration:underline}
+mark{background:#ffe9b3;color:inherit;border-radius:3px;padding:0 2px}
+.empty{display:none;text-align:center;padding:50px 20px;color:var(--muted);font-size:14px}
+.empty strong{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 24px;color:var(--muted);font-size:13px;background:#f9fafc}
+.pager{display:flex;gap:6px;align-items:center}
+.pager .btn{padding:7px 12px}
+.pager .btn.cur{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* Drawer */
+.veil{position:fixed;inset:0;background:rgba(11,29,51,.45);opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:#fff;z-index:21;transform:translateX(100%);transition:transform .3s;padding:28px;overflow-y:auto;box-shadow:-20px 0 40px -20px rgba(0,0,0,.3)}
+body.open .veil{opacity:1;pointer-events:auto}
+body.open .drawer{transform:none}
+.drawer h3{font:600 22px/1.3 var(--serif);margin:14px 0 18px;color:var(--navy)}
+.close{float:right;border:1px solid var(--line);background:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:16px}
+.close:hover{background:var(--teal-s)}
+.dl{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.dl div{display:flex;justify-content:space-between;gap:16px;padding:13px 16px;font-size:13px;border-bottom:1px solid var(--line)}
+.dl div:last-child{border-bottom:0}
+.dl dt{color:var(--muted);font-weight:600}.dl dd{font-weight:700;text-align:right;word-break:break-word}
+.open-btn{display:block;text-align:center;margin-top:20px;background:var(--teal);color:#fff;text-decoration:none;font-weight:700;padding:13px;border-radius:12px}
+.open-btn:hover{background:var(--teal-d)}
+
+.toast{position:fixed;right:24px;bottom:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:12px;font-size:13px;border-left:4px solid var(--amber);box-shadow:0 12px 30px -8px rgba(11,29,51,.5);transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s;z-index:30}
+.toast.show{transform:none;opacity:1}
+
+.scrape-panel {
+  padding: 0;
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.scrape-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  padding: 18px 24px;
+}
+
+.scrape-controls label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scrape-controls input {
+  min-width: 150px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+}
+
+.scrape-controls .scrape-query {
+  flex: 1;
+  min-width: 200px;
+}
+
+.scrape-controls .scrape-query input {
+  width: 100%;
+}
+
+.scrape-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+#scrape-start {
+  background: var(--teal);
+  color: white;
+  border-color: var(--teal);
+}
+
+.scrape-progress {
+  padding: 0 24px 16px;
+}
+
+.scrape-progress-track {
+  height: 10px;
+  overflow: hidden;
+  background: #e8edf2;
+  border-radius: 10px;
+}
+
+#scrape-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), #1ec2ae);
+  border-radius: inherit;
+  transition: width .25s ease;
+}
+
+.scrape-progress-label {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#scrape-message {
+  padding: 0 24px 16px;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.scrape-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 24px;
+  background: #f9fafc;
+  border-top: 1px solid var(--line);
+}
+
+.scrape-metrics div {
+  display: grid;
+  gap: 5px;
+}
+
+.scrape-metrics small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.scrape-metrics strong {
+  color: var(--navy);
+  font-size: 20px;
+}
+
+@media(max-width:720px) {
+  .scrape-controls,
+  .scrape-progress {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .scrape-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 16px;
+  }
+}
+
+.sort-panel {
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 24px;
+  background: #f9fafc;
+  border-bottom: 1px solid var(--line);
+}
+
+.sort-controls label {
+  display: grid;
+  gap: 7px;
+  flex: 1;
+  min-width: 175px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sort-controls select {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.sort-controls button {
+  background: var(--teal);
+  color: white;
+  border-color: var(--teal);
+}
+
+.sort-controls button:hover:not(:disabled) {
+  background: var(--teal-d);
+  color: white;
+}
+
+.sort-message {
+  padding: 16px 24px 4px;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.sort-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+.sort-metrics div {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.sort-metrics small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.sort-metrics strong {
+  color: var(--navy);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.sort-complexity {
+  padding: 0 24px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sort-complexity strong {
+  color: var(--text);
+}
+
+.sort-complexity p {
+  margin-top: 5px;
+}
+
+@media(max-width:720px) {
+  .sort-controls,
+  .sort-metrics {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .sort-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sort-message {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+
+@media(max-width:1100px){.sidebar{width:210px}.main{padding:22px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.insights{grid-template-columns:1fr}}
+@media(max-width:720px){.sidebar{display:none}.main{padding:14px}.topbar h1{font-size:24px}.profile-t{display:none}.hero{padding:24px 20px}.hero h2{font-size:22px}.stats{gap:10px}.stat{padding:14px;gap:10px}.ico{width:38px;height:38px}.stat b{font-size:21px}.split{flex-direction:column;align-items:flex-start}.p-head,.toolbar,.foot{padding-left:16px;padding-right:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Completed project modules */
+.feature-panel{margin:0 0 22px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.feature-body{padding:20px 24px}
+.feature-controls{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:12px;align-items:end}
+.feature-controls label,.condition-row label,.multi-row label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:800;color:var(--muted)}
+.feature-controls input,.feature-controls select,.condition-row input,.condition-row select,.multi-row select{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:10px 11px;background:#fff;color:var(--text)}
+.feature-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.condition-list{display:flex;flex-direction:column;gap:10px}
+.condition-row{display:grid;grid-template-columns:1.2fr 1fr 1.5fr auto;gap:10px;align-items:end;padding:12px;background:#f7f9fb;border:1px solid var(--line);border-radius:12px}
+.condition-row .remove-condition{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 12px;cursor:pointer}
+.feature-message{font-size:13px;color:var(--muted);margin-top:12px;line-height:1.5}
+.result-table-wrap{overflow:auto;margin-top:14px;border:1px solid var(--line);border-radius:10px}
+.result-table{width:100%;border-collapse:collapse;min-width:600px;font-size:12px}
+.result-table th,.result-table td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.result-table th{background:#f5f8fb;color:var(--muted);font-weight:800}
+.multi-row{display:grid;grid-template-columns:1.4fr 1fr 1.4fr 1fr;gap:12px;align-items:end;margin-top:12px}
+.data-stats{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;margin-top:16px}
+.data-stat{padding:14px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}
+.data-stat small{display:block;color:var(--muted);font-size:11px;font-weight:700}
+.data-stat strong{display:block;font-size:20px;margin-top:5px}
+.btn.secondary{background:#f0f5f7;color:var(--navy);border:1px solid var(--line)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.benchmark-table{width:100%;border-collapse:collapse;min-width:700px}
+.benchmark-table th,.benchmark-table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}
+.benchmark-table th{background:#f5f8fb;color:var(--muted)}
+.benchmark-table tr:first-child td{font-weight:700}
+@media(max-width:900px){.feature-controls,.multi-row,.data-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.condition-row{grid-template-columns:1fr 1fr}.condition-row label:nth-child(3){grid-column:1/-1}}
+@media(max-width:560px){.feature-controls,.multi-row,.data-stats,.condition-row{grid-template-columns:1fr}.condition-row label:nth-child(3){grid-column:auto}.feature-body{padding:15px}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">R</div><div><h2>Research Explorer</h2><p>Academic discovery</p></div></div>
+    <p class="nav-label">Workspace</p>
+    <button class="nav-item" data-section="Dashboard"><span>▦</span> Dashboard</button>
+    <button class="nav-item active" data-section="Publications"><span>▤</span> Publications</button>
+    <button class="nav-item" data-section="Advanced Search"><span>⌕</span> Advanced Search</button>
+    <p class="nav-label">Tools</p>
+    <button class="nav-item" data-section="Sorting Lab"><span>⇅</span> Sorting Lab</button>
+    <button class="nav-item" data-section="Algorithm Benchmarks"><span>◷</span> Algorithm Benchmarks</button>
+    <button class="nav-item" data-section="Data Management"><span>▣</span> Data Management</button>
+    <div class="side-card">
+      <strong>Dataset progress</strong>
+      <p><span id="sidebar-dataset-count">15,000</span> records loaded from the CSV dataset.</p>
+      <div class="bar"><i id="sidebar-progress" style="width:100%"></i></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="page-title">Publication Explorer</h1><p id="page-subtitle">Discover and analyze scholarly publications</p></div>
+      <div class="profile"><div class="avatar">R</div><div class="profile-t"><strong>Researcher</strong><small>Local workspace</small></div></div>
+    </header>
+
+    <section class="hero">
+      <span class="pill">Crossref dataset · live CSV-backed workspace</span>
+      <h2>Find any of 15,000 scholarly papers, then time how fast each algorithm finds it</h2>
+      <p>Browse Crossref metadata, filter by year and type, and get ready to benchmark searching and sorting.</p>
+      <div class="hero-search">
+        <input type="search" id="hero-input" placeholder="Search title, author, DOI or publisher" aria-label="Quick search">
+        <button id="hero-go">Search</button>
+      </div>
+    </section>
+
+<section class="card scrape-panel">
+  <div class="p-head">
+    <div>
+      <h2>Crossref Scraping Controls</h2>
+      <p>Collect additional scholarly records from Crossref.</p>
+    </div>
+    <span class="chip" id="scrape-state">Idle</span>
+  </div>
+
+  <div class="scrape-controls">
+    <label>
+      Record limit (1–5,000)
+      <input id="scrape-limit" type="number"
+             min="1" max="5000" value="100">
+    </label>
+
+    <label class="scrape-query">
+      Optional search topic
+      <input id="scrape-query" type="text"
+             maxlength="200"
+             placeholder="e.g. machine learning">
+    </label>
+
+    <div class="scrape-buttons">
+      <button class="btn" id="scrape-start">Start</button>
+      <button class="btn" id="scrape-pause" disabled>Pause</button>
+      <button class="btn" id="scrape-resume" disabled>Resume</button>
+      <button class="btn" id="scrape-stop" disabled>Stop</button>
+    </div>
+  </div>
+
+  <div class="scrape-progress">
+    <div class="scrape-progress-track">
+      <div id="scrape-progress-bar"></div>
+    </div>
+    <div class="scrape-progress-label">
+      <span id="scrape-progress-text">0% — Waiting to start</span>
+      <span id="scrape-count">0 / 0 processed</span>
+    </div>
+  </div>
+
+  <p id="scrape-message" role="status">
+    Ready to collect records.
+  </p>
+
+  <div class="scrape-metrics">
+    <div><small>New records</small><strong id="scrape-added">0</strong></div>
+    <div><small>Duplicates skipped</small><strong id="scrape-duplicates">0</strong></div>
+    <div><small>Errors</small><strong id="scrape-errors">0</strong></div>
+    <div><small>Records loaded</small><strong id="scrape-dataset">15,000</strong></div>
+  </div>
+</section>
+
+    <section class="stats">
+      <div class="stat"><div class="ico">▤</div><div><small>Dataset target</small><b id="stat-total-records">15,000</b></div></div>
+      <div class="stat"><div class="ico">◎</div><div><small>Data source</small><b>Crossref</b></div></div>
+      <div class="stat"><div class="ico">▦</div><div><small>Dataset fields</small><b>11</b></div></div>
+      <div class="stat"><div class="ico">✓</div><div><small>Interface</small><b>Ready</b></div></div>
+    </section>
+
+    <section class="insights">
+      <div class="card insight">
+        <h3>Papers by year</h3><p id="bars-note">Matches your current filters</p>
+        <div class="bars" id="bars"></div>
+        <div class="years" id="years"></div>
+      </div>
+      <div class="card insight">
+        <h3>Paper types</h3><p>Share of matching papers</p>
+        <div class="split"><div class="donut" id="donut"></div><ul class="legend" id="legend"></ul></div>
+      </div>
+    </section>
+
+
+<section class="feature-panel" id="advanced-search-panel">
+  <div class="p-head">
+    <div><h2>Advanced Search</h2><p>Build column-specific conditions across the complete dataset.</p></div>
+    <span class="chip">AND · OR · NOT</span>
+  </div>
+  <div class="feature-body">
+    <div class="feature-controls" style="grid-template-columns:minmax(180px,260px) 1fr">
+      <label>Combine conditions
+        <select id="advanced-logic">
+          <option value="AND">AND — every condition must match</option>
+          <option value="OR">OR — any condition may match</option>
+          <option value="NOT">NOT — exclude records matching any condition</option>
+        </select>
+      </label>
+      <p class="feature-message" style="margin:0">Contains, Starts With, Ends With, and Equals are case-insensitive. Results search all loaded rows; up to 100 matching rows are displayed.</p>
+    </div>
+    <div id="advanced-conditions" class="condition-list" style="margin-top:14px"></div>
+    <div class="feature-actions">
+      <button class="btn secondary" id="add-condition">+ Add condition</button>
+      <button class="btn" id="run-advanced-search">Run Advanced Search</button>
+      <button class="btn secondary" id="clear-advanced-search">Clear</button>
+    </div>
+    <p id="advanced-message" class="feature-message" role="status">Add a condition and run a search.</p>
+    <div class="result-table-wrap">
+      <table class="result-table">
+        <thead><tr><th>Title</th><th>Authors</th><th>Year</th><th>Type</th><th>DOI</th></tr></thead>
+        <tbody id="advanced-results-body"><tr><td colspan="5">Advanced search results will appear here.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="card sort-panel" id="sorting-lab">
+  <div class="p-head">
+    <div>
+      <h2>Sorting Lab</h2>
+      <p>Choose an algorithm and sort your research dataset.</p>
+    </div>
+    <span class="chip">Custom algorithms</span>
+  </div>
+
+  <div class="sort-controls">
+    <label>
+      Column
+      <select id="sort-key">
+        <option>Title</option>
+        <option>Authors</option>
+        <option>DOI</option>
+        <option>Publisher</option>
+        <option>Publication Year</option>
+        <option>Publication Type</option>
+        <option>Journal / Container Title</option>
+        <option>References Count</option>
+        <option>Cited-by Count</option>
+        <option>Author Count</option>
+        <option>Title Word Count</option>
+      </select>
+    </label>
+
+    <label>
+      Algorithm
+      <select id="sort-algorithm">
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="quick" selected>Quick Sort</option>
+        <option value="radix">Radix Sort — numeric only</option>
+        <option value="bucket">Bucket Sort — numeric only</option>
+        <option value="heap">Heap Sort</option>
+        <option value="shell">Shell Sort</option>
+        <option value="hybrid">Hybrid Merge-Insertion Sort</option>
+      </select>
+    </label>
+
+    <label>
+      Direction
+      <select id="sort-direction">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+    </label>
+
+    <button class="btn" id="run-sort">Run Sort</button>
+  </div>
+
+  <div class="feature-body" style="padding:0 24px 18px">
+    <div class="feature-controls" style="grid-template-columns:repeat(2,minmax(150px,1fr));margin-top:6px">
+      <label>Sort scope
+        <select id="sort-scope">
+          <option value="full">Full dataset (all records)</option>
+          <option value="filtered">Only current Publications filters</option>
+        </select>
+      </label>
+      <label>Benchmark scope
+        <select id="benchmark-scope">
+          <option value="filtered">Only current Publications filters</option>
+          <option value="full">Full dataset (all records)</option>
+        </select>
+      </label>
+    </div>
+    <h3 style="margin-top:18px">Multi-level sorting</h3>
+    <p class="feature-message">The second column breaks ties in the first column. This uses stable Merge Sort passes.</p>
+    <div class="multi-row">
+      <label>Primary column
+        <select id="multi-key-1"></select>
+      </label>
+      <label>Primary direction
+        <select id="multi-dir-1"><option value="asc">Ascending</option><option value="desc">Descending</option></select>
+      </label>
+      <label>Secondary column
+        <select id="multi-key-2"></select>
+      </label>
+      <label>Secondary direction
+        <select id="multi-dir-2"><option value="asc">Ascending</option><option value="desc">Descending</option></select>
+      </label>
+    </div>
+    <div class="feature-actions">
+      <button class="btn secondary" id="run-multi-sort">Run Multi-level Sort</button>
+      <button class="btn" id="run-benchmark">Benchmark All Algorithms</button>
+    </div>
+    <p class="feature-message">Benchmarking quadratic algorithms on all 15,000 records may take a while. Numeric-only algorithms are skipped when the selected column is text.</p>
+  </div>
+  <p id="sort-message" class="sort-message" role="status">
+    Select a column and algorithm to begin.
+  </p>
+
+  <div class="sort-metrics">
+    <div><small>Comparisons</small><strong id="sort-comparisons">—</strong></div>
+    <div><small>Swaps / moves</small><strong id="sort-swaps">—</strong></div>
+    <div><small>Execution time</small><strong id="sort-time">—</strong></div>
+    <div><small>Stability</small><strong id="sort-stability">—</strong></div>
+  </div>
+
+  <div class="sort-complexity">
+    <strong>Time complexity</strong>
+    <p id="sort-complexity">Run an algorithm to see its complexity.</p>
+  </div>
+</section>
+
+    
+<section class="feature-panel" id="benchmark-panel">
+  <div class="p-head"><div><h2>Algorithm Benchmark Results</h2><p>Compare elapsed time, comparisons, moves, complexity, and stability.</p></div><span class="chip">Measured results</span></div>
+  <div class="feature-body">
+    <p id="benchmark-message" class="feature-message">Run “Benchmark All Algorithms” in the Sorting Lab to populate this comparison table.</p>
+    <div class="result-table-wrap">
+      <table class="benchmark-table">
+        <thead><tr><th>Algorithm</th><th>Status</th><th>Time (ms)</th><th>Comparisons</th><th>Swaps / moves</th><th>Average complexity</th><th>Stable?</th></tr></thead>
+        <tbody id="benchmark-results-body"><tr><td colspan="7">No benchmark has been run yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="feature-panel" id="data-management-panel">
+  <div class="p-head"><div><h2>Data Management</h2><p>Inspect the loaded CSV dataset and export a backup.</p></div><span class="chip">CSV persistence</span></div>
+  <div class="feature-body">
+    <div class="feature-actions">
+      <button class="btn" id="refresh-data-stats">Refresh Dataset Stats</button>
+      <a class="btn secondary" id="download-csv" href="/api/export" style="text-decoration:none;display:inline-flex;align-items:center">Download CSV</a>
+    </div>
+    <p id="data-management-message" class="feature-message">Dataset information will load automatically.</p>
+    <div class="data-stats">
+      <div class="data-stat"><small>Total records</small><strong id="dm-records">—</strong></div>
+      <div class="data-stat"><small>Columns</small><strong id="dm-columns">—</strong></div>
+      <div class="data-stat"><small>Missing titles</small><strong id="dm-missing-titles">—</strong></div>
+      <div class="data-stat"><small>Missing authors</small><strong id="dm-missing-authors">—</strong></div>
+    </div>
+    <p class="feature-message">New records collected by the scraper are saved back to crossref_dataset.csv. Sorting changes the displayed order but does not rewrite source data.</p>
+  </div>
+</section>
+
+<section class="card panel">
+      <div class="p-head">
+        <div><h2>Publications</h2><p>Select a row to see full details</p></div>
+        <span class="chip">Sample records</span>
+      </div>
+      <div class="toolbar">
+        <div class="sbox"><span>⌕</span><input type="search" id="search-input" placeholder="Filter by title, author, DOI or publisher" aria-label="Search sample publications"></div>
+        <select id="year-filter" aria-label="Filter by year"><option value="">All years</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option></select>
+        <select id="type-filter" aria-label="Filter by type"><option value="">All types</option><option>Journal Article</option><option>Review</option><option>Conference Paper</option></select>
+        <button class="btn" id="reset-button">Reset</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr id="head"></tr></thead>
+          <tbody id="publication-body"></tbody>
+        </table>
+        <div class="empty" id="empty-state"><strong>No papers match your search</strong>Try a different keyword or reset the filters.</div>
+      </div>
+      <div class="foot"><span id="result-count"></span><div class="pager" id="pager"></div></div>
+    </section>
+  </main>
+</div>
+
+<div class="veil" id="veil"></div>
+<aside class="drawer" id="drawer" aria-label="Paper details" aria-hidden="true"></aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// Demonstration records only. Replace with the real CSV dataset in the next step.
+const API = "/api/publications";
+const PAGE_SIZE = 50;
+
+const $ = id => document.getElementById(id);
+
+let page = 1;
+let totalPages = 1;
+let totalRecords = 0;
+let papers = [];
+let sortKey = "Title";
+let sortDir = 1;
+let serverSortActive = false;
+let searchTimer;
+
+const fields = [
+  ["Title", "Title"],
+  ["Authors", "Authors"],
+  ["Publication Year", "Year"],
+  ["Publication Type", "Type"],
+  ["Publisher", "Publisher"],
+  ["DOI", "DOI"]
+];
+
+const typeClass = type => {
+  const t = String(type || "").toLowerCase();
+  if (t.includes("journal")) return "t-j";
+  if (t.includes("review")) return "t-r";
+  return "t-c";
+};
+function currentPublicationFilters() {
+  return {
+    q: $("search-input").value.trim(),
+    year: $("year-filter").value,
+    type: $("type-filter").value
+  };
+}
+
+function postJson(url, body) {
+  return fetch(url, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(body)
+  }).then(async response => {
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+    return data;
+  });
+}
+
+function showSortMetrics(data, label) {
+  $("sort-comparisons").textContent = Number(data.comparisons || 0).toLocaleString();
+  $("sort-swaps").textContent = Number(data.swaps || 0).toLocaleString();
+  $("sort-time").textContent = `${Number(data.time_ms || 0).toFixed(3)} ms`;
+  $("sort-stability").textContent = data.stable === undefined ? "See algorithm" : (data.stable ? "Yes" : "No");
+  const c = data.complexity || {};
+  $("sort-complexity").textContent = typeof c === "string" ? c :
+    `Best: ${c.best || "—"} · Average: ${c.average || "—"} · Worst: ${c.worst || "—"}`;
+  $("sort-message").textContent = data.message || `${label} completed.`;
+}
+
+function connectRunSortButton() {
+  const runButton = $("run-sort");
+  runButton.addEventListener("click", async () => {
+    const algorithm = $("sort-algorithm").value;
+    const key = $("sort-key").value;
+    const direction = $("sort-direction").value;
+    const scope = $("sort-scope").value;
+    runButton.disabled = true;
+    $("sort-message").textContent = "Sorting records on the server…";
+    try {
+      const data = await postJson("/api/sort", {
+        algorithm, key, direction, scope, filters: currentPublicationFilters()
+      });
+      showSortMetrics(data, "Sort");
+      sortKey = "";
+      serverSortActive = true;
+      page = 1;
+      await loadPublications();
+      serverSortActive = true;
+      document.querySelector("#publication-body")?.scrollIntoView({behavior:"smooth",block:"nearest"});
+    } catch (error) {
+      $("sort-message").textContent = `Sort failed: ${error.message}`;
+    } finally {
+      runButton.disabled = false;
+    }
+  });
+
+  $("run-multi-sort").addEventListener("click", async () => {
+    const button = $("run-multi-sort");
+    button.disabled = true;
+    $("sort-message").textContent = "Running stable multi-level Merge Sort…";
+    const keys = [
+      {key:$("multi-key-1").value,direction:$("multi-dir-1").value},
+      {key:$("multi-key-2").value,direction:$("multi-dir-2").value}
+    ];
+    if (keys[0].key === keys[1].key) {
+      $("sort-message").textContent = "Choose two different columns for multi-level sorting.";
+      button.disabled = false;
+      return;
+    }
+    try {
+      const data = await postJson("/api/multi-sort", {
+        keys, scope:$("sort-scope").value, filters:currentPublicationFilters()
+      });
+      showSortMetrics(data, "Multi-level sort");
+      $("sort-stability").textContent = "Yes (stable merge passes)";
+      $("sort-complexity").textContent = "Stable Merge Sort passes, one per selected column; O(k · n log n).";
+      sortKey = "";
+      page = 1;
+      await loadPublications();
+      serverSortActive = true;
+    } catch (error) {
+      $("sort-message").textContent = `Multi-level sort failed: ${error.message}`;
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  $("run-benchmark").addEventListener("click", async () => {
+    const button = $("run-benchmark");
+    button.disabled = true;
+    $("benchmark-message").textContent = "Benchmark running. Quadratic algorithms can take longer on the full dataset…";
+    $("benchmark-results-body").innerHTML = '<tr><td colspan="7">Benchmark running… please keep this tab open.</td></tr>';
+    try {
+      const data = await postJson("/api/benchmark", {
+        key:$("sort-key").value, scope:$("benchmark-scope").value,
+        filters:currentPublicationFilters()
+      });
+      $("benchmark-message").textContent = `${data.message} Column: ${data.key}. Scope: ${data.scope}.`;
+      const body = $("benchmark-results-body");
+      body.replaceChildren();
+      data.results.forEach(item => {
+        const tr = document.createElement("tr");
+        const cells = [
+          item.algorithm_label,
+          item.status === "completed" ? "Completed" : (item.reason || item.status),
+          item.time_ms == null ? "—" : Number(item.time_ms).toFixed(3),
+          item.comparisons == null ? "—" : Number(item.comparisons).toLocaleString(),
+          item.swaps == null ? "—" : Number(item.swaps).toLocaleString(),
+          item.complexity || "—",
+          item.stable === undefined ? "—" : (item.stable ? "Yes" : "No")
+        ];
+        cells.forEach(value => {
+          const td = document.createElement("td");
+          td.textContent = String(value);
+          tr.append(td);
+        });
+        body.append(tr);
+      });
+      document.querySelector("#benchmark-panel").scrollIntoView({behavior:"smooth",block:"start"});
+    } catch (error) {
+      $("benchmark-message").textContent = `Benchmark failed: ${error.message}`;
+      $("benchmark-results-body").innerHTML = '<tr><td colspan="7">Benchmark failed. Check the server terminal for details.</td></tr>';
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
+function getParams() {
+  const params = new URLSearchParams();
+  const q = $("search-input").value.trim();
+  const year = $("year-filter").value;
+  const type = $("type-filter").value;
+
+  if (q) params.set("q", q);
+  if (year) params.set("year", year);
+  if (type) params.set("type", type);
+
+  params.set("page", page);
+  return params;
+}
+
+async function loadPublications() {
+  const tbody = $("publication-body");
+  tbody.replaceChildren();
+
+  tbody.append(
+    Object.assign(document.createElement("tr"), {
+      innerHTML: '<td colspan="6" style="padding:30px;text-align:center">Loading publications...</td>'
+    })
+  );
+
+  try {
+    const response = await fetch(`${API}?${getParams()}`);
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
+    const data = await response.json();
+papers = data.results || [];
+serverSortActive = Boolean(data.server_sorted);
+    
+    totalRecords = data.total_records || 0;
+    totalPages = Math.max(1, data.total_pages || 1);
+    page = data.page || page;
+
+    renderTable();
+    renderPagination();
+    renderCharts();
+
+    $("result-count").textContent = totalRecords
+      ? `Showing ${(page - 1) * PAGE_SIZE + 1}–${(page - 1) * PAGE_SIZE + papers.length} of ${totalRecords.toLocaleString()} publications`
+      : "No publications found";
+
+    $("empty-state").style.display =
+      totalRecords === 0 ? "block" : "none";
+
+    const chip = document.querySelector(".chip");
+    if (chip) chip.textContent = "Live dataset";
+
+    const note = document.querySelector(".p-head p");
+    if (note) note.textContent = "Real publications from your Crossref CSV dataset";
+
+  } catch (error) {
+    tbody.replaceChildren();
+    $("empty-state").style.display = "block";
+    $("empty-state").innerHTML =
+      "<strong>Could not load publications</strong>Check that app.py is running and try again.";
+    $("result-count").textContent = error.message;
+    console.error("Publication loading error:", error);
+  }
+}
+
+function renderTable() {
+  const head = $("head");
+  const tbody = $("publication-body");
+  head.replaceChildren();
+  tbody.replaceChildren();
+
+  fields.forEach(([key, label]) => {
+    const th = document.createElement("th");
+    const button = document.createElement("button");
+    button.className = key === sortKey ? "on" : "";
+    button.textContent =
+      label + (key === sortKey ? (sortDir === 1 ? " ▲" : " ▼") : " ⇅");
+
+    button.onclick = async () => {
+      if (sortKey === key) {
+        sortDir *= -1;
+      } else {
+        sortKey = key;
+        sortDir = 1;
+      }
+      button.disabled = true;
+      $("sort-message").textContent = `Sorting the full dataset by ${key}…`;
+      try {
+        const result = await postJson("/api/sort", {
+          algorithm: "quick",
+          key,
+          direction: sortDir === 1 ? "asc" : "desc",
+          scope: "full",
+          filters: {}
+        });
+        serverSortActive = true;
+        page = 1;
+        await loadPublications();
+        serverSortActive = true;
+        $("sort-message").textContent = result.message;
+      } catch (error) {
+        $("sort-message").textContent = `Column sort failed: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
+    };
+
+    th.append(button);
+    head.append(th);
+  });
+
+  const sorted = [...papers];
+
+  sorted.forEach(paper => {
+    const tr = document.createElement("tr");
+    tr.tabIndex = 0;
+
+    fields.forEach(([key]) => {
+      const td = document.createElement("td");
+      const value = paper[key] ?? "Not available";
+
+      if (key === "Title") {
+        td.className = "ttl";
+        td.textContent = value;
+      } else if (key === "Authors") {
+        const author = document.createElement("div");
+        author.className = "au";
+
+        const avatar = document.createElement("i");
+        avatar.textContent = String(value)[0] || "?";
+
+        const name = document.createElement("span");
+        name.textContent = value;
+
+        author.append(avatar, name);
+        td.append(author);
+      } else if (key === "Publication Year") {
+        td.className = "yr";
+        td.textContent = value;
+      } else if (key === "Publication Type") {
+        const tag = document.createElement("span");
+        tag.className = `tag ${typeClass(value)}`;
+        tag.textContent = value;
+        td.append(tag);
+      } else if (key === "DOI" && value !== "Not available") {
+        const link = document.createElement("a");
+        link.className = "doi";
+        link.textContent = value;
+        link.href = "https://doi.org/" + encodeURIComponent(value);
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.onclick = event => event.stopPropagation();
+        td.append(link);
+      } else {
+        td.className = "nw";
+        td.textContent = value;
+      }
+
+      tr.append(td);
+    });
+
+    tr.onclick = () => openDrawer(paper);
+    tr.onkeydown = event => {
+      if (event.key === "Enter") openDrawer(paper);
+    };
+
+    tbody.append(tr);
+  });
+}
+
+function renderPagination() {
+  const pager = $("pager");
+  pager.replaceChildren();
+
+  function addButton(label, target, disabled, active = false) {
+    const button = document.createElement("button");
+    button.className = "btn" + (active ? " cur" : "");
+    button.textContent = label;
+    button.disabled = disabled;
+
+    button.onclick = () => {
+      serverSortActive = false;
+      page = target;
+      loadPublications();
+    };
+
+    pager.append(button);
+  }
+
+  addButton("Prev", page - 1, page <= 1);
+
+  const start = Math.max(1, page - 2);
+  const end = Math.min(totalPages, page + 2);
+
+  for (let n = start; n <= end; n++) {
+    addButton(String(n), n, false, n === page);
+  }
+
+  addButton("Next", page + 1, page >= totalPages);
+}
+
+function renderCharts() {
+  // These charts describe the currently loaded page, not the whole dataset.
+  const years = [2021, 2022, 2023, 2024];
+  const counts = years.map(y =>
+    papers.filter(p => Number(p["Publication Year"]) === y).length
+  );
+
+  const max = Math.max(1, ...counts);
+  $("bars").replaceChildren();
+
+  counts.forEach((count, i) => {
+    const col = document.createElement("div");
+    col.className = "col";
+
+    const number = document.createElement("span");
+    number.textContent = count;
+
+    const bar = document.createElement("i");
+    bar.style.height = (count / max * 78) + "%";
+
+    col.append(number, bar);
+    $("bars").append(col);
+  });
+
+  $("years").replaceChildren(
+    ...years.map(y => {
+      const span = document.createElement("span");
+      span.textContent = y;
+      return span;
+    })
+  );
+
+  const types = [...new Set(
+    papers.map(p => p["Publication Type"] || "Unknown")
+  )];
+
+  const countsByType = types.map(t =>
+    papers.filter(p => (p["Publication Type"] || "Unknown") === t).length
+  );
+
+  const colors = ["#12a594", "#f0a935", "#3f5fa8", "#7b8a9a"];
+  let angle = 0;
+
+  const stops = countsByType.map((count, i) => {
+    const start = angle;
+    angle += papers.length ? count / papers.length * 100 : 0;
+    return `${colors[i % colors.length]} ${start}% ${angle}%`;
+  });
+
+  $("donut").style.background = papers.length
+    ? `conic-gradient(${stops.join(",")})`
+    : "#e0e6ee";
+
+  $("donut").dataset.total = papers.length;
+  $("legend").replaceChildren();
+
+  types.forEach((type, i) => {
+    const li = document.createElement("li");
+    const marker = document.createElement("i");
+    marker.style.background = colors[i % colors.length];
+
+    const label = document.createElement("span");
+    label.textContent = type;
+
+    const number = document.createElement("b");
+    number.textContent = countsByType[i];
+
+    li.append(marker, label, number);
+    $("legend").append(li);
+  });
+
+  const note = $("bars-note");
+  if (note) note.textContent = "Counts on the current page only";
+}
+
+
+async function openDrawer(paper) {
+  const drawer = $("drawer");
+  drawer.replaceChildren();
+
+  const close = document.createElement("button");
+  close.className = "close";
+  close.textContent = "×";
+  close.setAttribute("aria-label", "Close details");
+  close.onclick = closeDrawer;
+
+  drawer.append(close);
+
+  const loading = document.createElement("p");
+  loading.textContent = "Loading publication details...";
+  drawer.append(loading);
+
+  document.body.classList.add("open");
+  drawer.setAttribute("aria-hidden", "false");
+
+  try {
+    let fullPaper = paper;
+
+    if (paper.DOI) {
+      const response = await fetch(
+        "/api/paper?doi=" + encodeURIComponent(paper.DOI)
+      );
+
+      if (!response.ok) {
+        throw new Error("Could not load publication details.");
+      }
+
+      const data = await response.json();
+      fullPaper = data.paper;
+    }
+
+    drawer.replaceChildren();
+    drawer.append(close);
+
+    const tag = document.createElement("span");
+    tag.className =
+      `tag ${typeClass(fullPaper["Publication Type"])}`;
+    tag.textContent =
+      fullPaper["Publication Type"] || "Unknown";
+
+    const title = document.createElement("h3");
+    title.textContent =
+      fullPaper.Title || "Untitled publication";
+
+    const dl = document.createElement("dl");
+    dl.className = "dl";
+
+    const details = [
+      ["Authors", fullPaper.Authors],
+      ["Publication Year", fullPaper["Publication Year"]],
+      ["Publisher", fullPaper.Publisher],
+      ["Journal", fullPaper["Journal / Container Title"]],
+      ["DOI", fullPaper.DOI],
+      ["References", fullPaper["References Count"]],
+      ["Citations", fullPaper["Cited-by Count"]],
+      ["Author Count", fullPaper["Author Count"]],
+      ["Title Word Count", fullPaper["Title Word Count"]]
+    ];
+
+    details.forEach(([label, value]) => {
+      const row = document.createElement("div");
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+
+      dt.textContent = label;
+      dd.textContent =
+        value === undefined || value === null || value === ""
+          ? "Not available"
+          : value;
+
+      row.append(dt, dd);
+      dl.append(row);
+    });
+
+    drawer.append(tag, title, dl);
+
+    if (fullPaper.DOI) {
+      const link = document.createElement("a");
+      link.className = "open-btn";
+      link.textContent = "Open publication on doi.org";
+      link.href =
+        "https://doi.org/" + encodeURIComponent(fullPaper.DOI);
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      drawer.append(link);
+    }
+  } catch (error) {
+    drawer.replaceChildren();
+    drawer.append(close);
+
+    const message = document.createElement("p");
+    message.textContent =
+      "Unable to load details. Please check that the server is running and try again.";
+    drawer.append(message);
+
+    console.error("Paper details error:", error);
+  }
+}
+
+
+
+function closeDrawer() {
+  document.body.classList.remove("open");
+  $("drawer").setAttribute("aria-hidden", "true");
+}
+
+$("veil").onclick = closeDrawer;
+
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeDrawer();
+});
+
+function runSearch() {
+  page = 1;
+  loadPublications();
+}
+
+$("search-input").addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(runSearch, 350);
+});
+
+$("year-filter").addEventListener("change", runSearch);
+$("type-filter").addEventListener("change", runSearch);
+
+$("reset-button").onclick = () => {
+  serverSortActive = false;
+  $("search-input").value = "";
+  $("hero-input").value = "";
+  $("year-filter").value = "";
+  $("type-filter").value = "";
+  page = 1;
+  sortKey = "Title";
+  sortDir = 1;
+  loadPublications();
+};
+
+function heroSearch() {
+  $("search-input").value = $("hero-input").value;
+  page = 1;
+  loadPublications();
+
+  document.querySelector(".panel").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+$("hero-go").onclick = heroSearch;
+
+$("hero-input").addEventListener("keydown", event => {
+  if (event.key === "Enter") heroSearch();
+});
+
+document.querySelectorAll(".nav-item").forEach(button => {
+  button.onclick = () => {
+    document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+    button.classList.add("active");
+    const section = button.dataset.section;
+    const map = {
+      "Dashboard": [".hero", "Research Paper Explorer", "Overview of your Crossref research dataset"],
+      "Publications": [".panel", "Publication Explorer", "Browse, filter, and inspect scholarly publications"],
+      "Advanced Search": ["#advanced-search-panel", "Advanced Search", "Combine column-specific conditions with AND, OR, or NOT"],
+      "Sorting Lab": ["#sorting-lab", "Sorting Lab", "Run custom sorting algorithms and inspect their metrics"],
+      "Algorithm Benchmarks": ["#benchmark-panel", "Algorithm Benchmarks", "Compare the performance of sorting algorithms"],
+      "Data Management": ["#data-management-panel", "Data Management", "Review and export the persistent CSV dataset"]
+    };
+    const config = map[section] || map["Publications"];
+    $("page-title").textContent = config[1];
+    $("page-subtitle").textContent = config[2];
+    const target = document.querySelector(config[0]);
+    if (target) target.scrollIntoView({behavior:"smooth", block:"start"});
+  };
+});
+
+async function loadFilterOptions() {
+  try {
+    const response = await fetch("/api/stats");
+    if (!response.ok) return;
+
+    const stats = await response.json();
+
+    if (Array.isArray(stats.years) && stats.years.length) {
+      const select = $("year-filter");
+      select.replaceChildren(new Option("All years", ""));
+
+      stats.years.forEach(year => {
+        select.add(new Option(String(year), String(year)));
+      });
+    }
+
+    if (Array.isArray(stats.types) && stats.types.length) {
+      const select = $("type-filter");
+      select.replaceChildren(new Option("All types", ""));
+
+      stats.types.forEach(type => {
+        select.add(new Option(type, type));
+      });
+    }
+  } catch (error) {
+    console.warn("Filter options unavailable; using existing options.", error);
+  }
+}
+
+let lastScrapeDatasetCount = null;
+
+async function scrapeAction(action) {
+  const message = $("scrape-message");
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  };
+
+  if (action === "start") {
+    const limit = Number($("scrape-limit").value);
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > 5000) {
+      message.textContent = "Enter a whole-number limit from 1 to 5,000.";
+      return;
+    }
+
+    options.body = JSON.stringify({
+      limit,
+      query: $("scrape-query").value.trim()
+    });
+  }
+
+  try {
+    const response = await fetch(`/api/scraper/${action}`, options);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `Request failed (${response.status})`);
+    }
+
+    message.textContent = data.message || "Request completed.";
+    await refreshScraperStatus();
+  } catch (error) {
+    message.textContent = `Scraper error: ${error.message}`;
+  }
+}
+
+async function refreshScraperStatus() {
+  try {
+    const response = await fetch("/api/scraper/status");
+
+    if (!response.ok) {
+      throw new Error("Could not read scraper status.");
+    }
+
+    const s = await response.json();
+
+    $("scrape-state").textContent =
+      s.state.charAt(0).toUpperCase() + s.state.slice(1);
+
+    $("scrape-progress-bar").style.width = `${s.progress}%`;
+    $("scrape-progress-text").textContent =
+      `${s.progress}% — ${s.state}`;
+    $("scrape-count").textContent =
+      `${s.processed.toLocaleString()} / ${s.target.toLocaleString()} processed`;
+
+    $("scrape-added").textContent = s.added.toLocaleString();
+    $("scrape-duplicates").textContent = s.duplicates.toLocaleString();
+    $("scrape-errors").textContent = s.errors.toLocaleString();
+    $("scrape-dataset").textContent = s.dataset_records.toLocaleString();
+
+    $("scrape-message").textContent = s.message;
+
+    const active = ["starting", "running", "paused"].includes(s.state);
+
+    $("scrape-start").disabled = active;
+    $("scrape-pause").disabled = s.state !== "running";
+    $("scrape-resume").disabled = s.state !== "paused";
+    $("scrape-stop").disabled = !active;
+
+    // Refresh the table when the in-memory dataset grows.
+    if (
+      lastScrapeDatasetCount !== null &&
+      lastScrapeDatasetCount !== s.dataset_records
+    ) {
+      await loadPublications();
+    }
+
+    lastScrapeDatasetCount = s.dataset_records;
+  } catch (error) {
+    $("scrape-message").textContent =
+      `Could not update scraper status: ${error.message}`;
+  }
+}
+
+$("scrape-start").onclick = () => scrapeAction("start");
+$("scrape-pause").onclick = () => scrapeAction("pause");
+$("scrape-resume").onclick = () => scrapeAction("resume");
+$("scrape-stop").onclick = () => scrapeAction("stop");
+
+// Keep progress and controls updated while scraping.
+refreshScraperStatus();
+setInterval(refreshScraperStatus, 1500);
+
+const DATA_COLUMNS = [
+  "DOI","Title","Authors","Publisher","Publication Year","Publication Type",
+  "Journal / Container Title","References Count","Cited-by Count","Author Count","Title Word Count"
+];
+const SEARCH_OPERATORS = ["Contains","Starts With","Ends With","Equals"];
+
+function addAdvancedCondition(column="Title", operator="Contains", value="") {
+  const row = document.createElement("div");
+  row.className = "condition-row";
+  const columnLabel = document.createElement("label");
+  columnLabel.textContent = "Column";
+  const columnSelect = document.createElement("select");
+  DATA_COLUMNS.forEach(name => columnSelect.add(new Option(name,name)));
+  columnSelect.value = column;
+  columnLabel.append(columnSelect);
+
+  const operatorLabel = document.createElement("label");
+  operatorLabel.textContent = "Operator";
+  const operatorSelect = document.createElement("select");
+  SEARCH_OPERATORS.forEach(name => operatorSelect.add(new Option(name,name)));
+  operatorSelect.value = operator;
+  operatorLabel.append(operatorSelect);
+
+  const valueLabel = document.createElement("label");
+  valueLabel.textContent = "Search value";
+  const valueInput = document.createElement("input");
+  valueInput.type = "text";
+  valueInput.maxLength = 500;
+  valueInput.placeholder = "Enter a value…";
+  valueInput.value = value;
+  valueLabel.append(valueInput);
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "remove-condition";
+  remove.textContent = "Remove";
+  remove.onclick = () => { if ($("advanced-conditions").children.length > 1) row.remove(); };
+  row.append(columnLabel,operatorLabel,valueLabel,remove);
+  $("advanced-conditions").append(row);
+}
+
+function renderAdvancedResults(data) {
+  const body = $("advanced-results-body");
+  body.replaceChildren();
+  if (!data.results || !data.results.length) {
+    body.innerHTML = '<tr><td colspan="5">No records matched these conditions.</td></tr>';
+    return;
+  }
+  data.results.forEach(paper => {
+    const tr = document.createElement("tr");
+    [paper.Title,paper.Authors,paper["Publication Year"],paper["Publication Type"],paper.DOI].forEach(value => {
+      const td = document.createElement("td");
+      td.textContent = value == null || value === "" ? "—" : String(value);
+      tr.append(td);
+    });
+    body.append(tr);
+  });
+}
+
+function connectAdvancedSearch() {
+  addAdvancedCondition();
+  $("add-condition").onclick = () => {
+    if ($("advanced-conditions").children.length >= 20) {
+      $("advanced-message").textContent = "Maximum of 20 conditions reached.";
+      return;
+    }
+    addAdvancedCondition();
+  };
+  $("clear-advanced-search").onclick = () => {
+    $("advanced-conditions").replaceChildren();
+    addAdvancedCondition();
+    $("advanced-logic").value = "AND";
+    $("advanced-message").textContent = "Search conditions cleared.";
+    $("advanced-results-body").innerHTML = '<tr><td colspan="5">Advanced search results will appear here.</td></tr>';
+  };
+  $("run-advanced-search").onclick = async () => {
+    const conditions = [...$("advanced-conditions").children].map(row => {
+      const selects = row.querySelectorAll("select");
+      const input = row.querySelector("input");
+      return {column:selects[0].value,operator:selects[1].value,value:input.value.trim()};
+    });
+    if (conditions.some(item => !item.value)) {
+      $("advanced-message").textContent = "Fill in a value for every condition before searching.";
+      return;
+    }
+    const button = $("run-advanced-search");
+    button.disabled = true;
+    $("advanced-message").textContent = "Searching all dataset records…";
+    try {
+      const data = await postJson("/api/advanced-search", {
+        conditions, logic:$("advanced-logic").value
+      });
+      $("advanced-message").textContent = data.message;
+      renderAdvancedResults(data);
+    } catch (error) {
+      $("advanced-message").textContent = `Advanced search failed: ${error.message}`;
+    } finally {
+      button.disabled = false;
+    }
+  };
+}
+
+async function refreshDataManagement() {
+  $("refresh-data-stats").disabled = true;
+  try {
+    const response = await fetch("/api/stats");
+    if (!response.ok) throw new Error("Stats endpoint returned an error.");
+    const stats = await response.json();
+    $("dm-records").textContent = Number(stats.total_records).toLocaleString();
+    $("dm-columns").textContent = stats.total_columns;
+    $("dm-missing-titles").textContent = Number(stats.missing_titles).toLocaleString();
+    $("dm-missing-authors").textContent = Number(stats.missing_authors).toLocaleString();
+    $("stat-total-records").textContent = Number(stats.total_records).toLocaleString();
+    $("sidebar-dataset-count").textContent = Number(stats.total_records).toLocaleString();
+    $("scrape-dataset").textContent = Number(stats.total_records).toLocaleString();
+    $("data-management-message").textContent =
+      `Loaded ${Number(stats.total_records).toLocaleString()} records across ${stats.total_columns} columns.`;
+  } catch (error) {
+    $("data-management-message").textContent = `Could not refresh dataset stats: ${error.message}`;
+  } finally {
+    $("refresh-data-stats").disabled = false;
+  }
+}
+$("refresh-data-stats").addEventListener("click", refreshDataManagement);
+
+async function startApp() {
+  connectRunSortButton();
+  connectAdvancedSearch();
+  DATA_COLUMNS.forEach(name => {
+    $("multi-key-1").add(new Option(name,name));
+    $("multi-key-2").add(new Option(name,name));
+  });
+  $("multi-key-1").value = "Publication Year";
+  $("multi-key-2").value = "Title";
+  await loadFilterOptions();
+  await loadPublications();
+  await refreshDataManagement();
+}
+
+startApp();
+
+</script>
+</body>
+</html>

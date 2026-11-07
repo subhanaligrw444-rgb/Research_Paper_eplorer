@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Paper Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b1d33;--navy2:#14304d;--teal:#12a594;--teal-d:#0b7d70;--teal-s:#e2f6f3;
+  --amber:#f0a935;--amber-s:#fdf1d8;--indigo:#3f5fa8;--indigo-s:#e8edf8;
+  --bg:#eef2f6;--card:#fff;--text:#13202e;--muted:#68788a;--line:#e0e6ee;
+  --shadow:0 1px 2px rgba(11,29,51,.05),0 12px 28px -14px rgba(11,29,51,.22);
+  --sans:"Manrope","Segoe UI",system-ui,Arial,sans-serif;--serif:"Newsreader",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.app{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:260px;flex-shrink:0;background:linear-gradient(180deg,var(--navy),#0f2640);color:#b7c7d8;padding:28px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:12px;margin:0 8px 30px}
+.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--teal),#1ec2ae);color:#fff;font:600 24px var(--serif)}
+.brand h2{font-size:16px;color:#fff;letter-spacing:-.2px}
+.brand p{font-size:11px;color:#7f95ab;margin-top:3px}
+.nav-label{color:#647c94;font-size:11px;font-weight:700;margin:22px 12px 8px}
+.nav-item{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:#aebfd0;text-align:left;padding:11px 12px;margin:2px 0;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:500;position:relative;transition:.15s}
+.nav-item span{width:20px;text-align:center;font-size:16px}
+.nav-item:hover:not(.active){background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(18,165,148,.16);color:#fff;font-weight:700}
+.nav-item.active::before{content:"";position:absolute;left:-18px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--amber)}
+.side-card{margin-top:auto;padding:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px}
+.side-card strong{color:#fff;font-size:13px}
+.side-card p{margin-top:6px;font-size:12px;line-height:1.6;color:#92a6ba}
+.bar{height:6px;background:rgba(255,255,255,.1);border-radius:6px;margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;width:3%;background:linear-gradient(90deg,var(--teal),var(--amber));border-radius:6px}
+
+/* Main */
+.main{min-width:0;flex:1;padding:28px 34px 40px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+.topbar h1{font:600 30px var(--serif);letter-spacing:-.5px}
+.topbar p{color:var(--muted);margin-top:4px;font-size:14px}
+.profile{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 8px;border:1px solid var(--line);border-radius:40px;background:var(--card)}
+.avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:13px}
+.profile strong{font-size:13px}.profile small{display:block;margin-top:2px;color:var(--muted);font-size:11px}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(115deg,var(--navy) 0%,var(--navy2) 55%,#17566a 100%);color:#fff;border-radius:20px;padding:34px 36px;margin-bottom:22px;box-shadow:var(--shadow)}
+.hero::after{content:"";position:absolute;right:-70px;top:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(18,165,148,.45),transparent 68%)}
+.hero>*{position:relative;z-index:1}
+.pill{display:inline-block;background:rgba(240,169,53,.16);border:1px solid rgba(240,169,53,.5);color:#f7cd82;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px}
+.hero h2{font:600 28px/1.25 var(--serif);max-width:560px;margin:14px 0 8px}
+.hero p{color:#b6c8da;font-size:14px;line-height:1.65;max-width:520px}
+.hero-search{display:flex;gap:10px;margin-top:22px;max-width:620px;background:#fff;border-radius:14px;padding:6px;box-shadow:0 14px 30px -12px rgba(0,0,0,.5)}
+.hero-search input{flex:1;border:0;outline:0;padding:12px 14px;font-size:14px;color:var(--text);background:none;min-width:0}
+.hero-search button{border:0;background:var(--teal);color:#fff;font-weight:700;padding:0 22px;border-radius:10px;cursor:pointer;transition:.15s}
+.hero-search button:hover{background:var(--teal-d)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:14px;align-items:center;min-width:0}
+.ico{display:grid;place-items:center;flex-shrink:0;width:46px;height:46px;border-radius:13px;font-size:20px;background:var(--teal-s);color:var(--teal-d)}
+.stat:nth-child(2) .ico{background:var(--indigo-s);color:var(--indigo)}
+.stat:nth-child(3) .ico{background:var(--amber-s);color:#a76c0f}
+.stat:nth-child(4) .ico{background:#e4f5ea;color:#2a9457}
+.stat small{color:var(--muted);font-size:12.5px;font-weight:600}
+.stat b{display:block;font:600 26px var(--serif);margin-top:2px;letter-spacing:-.4px}
+
+/* Insights */
+.insights{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.insight{padding:20px 22px}
+.insight h3{font:600 18px var(--serif)}
+.insight>p{color:var(--muted);font-size:12.5px;margin-top:3px}
+.bars{display:flex;align-items:flex-end;gap:18px;height:140px;margin-top:20px;padding:0 6px;border-bottom:1px solid var(--line)}
+.col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:6px}
+.col span{font-size:12px;font-weight:700;color:var(--navy)}
+.col i{display:block;width:100%;max-width:56px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--teal),#0d8a7b);min-height:3px;transition:height .4s}
+.years{display:flex;gap:18px;padding:8px 6px 0;font-size:12px;color:var(--muted);font-weight:600}
+.years span{flex:1;text-align:center}
+.split{display:flex;align-items:center;gap:22px;margin-top:18px}
+.donut{position:relative;width:128px;height:128px;border-radius:50%;flex-shrink:0}
+.donut::after{content:attr(data-total);position:absolute;inset:22px;border-radius:50%;background:#fff;display:grid;place-items:center;font:600 24px var(--serif)}
+.legend{list-style:none;display:grid;gap:10px;font-size:13px}
+.legend li{display:flex;align-items:center;gap:9px;color:#3a4a5c;font-weight:600}
+.legend i{width:11px;height:11px;border-radius:3px}
+.legend b{margin-left:auto;padding-left:14px;color:var(--navy)}
+
+/* Table card */
+.panel{overflow:hidden}
+.p-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:22px 24px;border-bottom:1px solid var(--line)}
+.p-head h2{font:600 21px var(--serif)}
+.p-head p{margin-top:4px;color:var(--muted);font-size:13px}
+.chip{background:var(--amber-s);color:#85570f;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:16px 24px;background:#f9fafc;border-bottom:1px solid var(--line)}
+.sbox{flex:1;min-width:230px;position:relative}
+.sbox span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.toolbar input,.toolbar select{padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#3a4a5c;font-size:13px}
+.sbox input{width:100%;padding-left:38px}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--teal);outline:3px solid var(--teal-s)}
+.btn{border:1px solid var(--line);background:#fff;color:#3a4a5c;border-radius:10px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.btn:hover:not(:disabled){background:var(--teal-s);border-color:var(--teal);color:var(--teal-d)}
+.btn:disabled{opacity:.45;cursor:default}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left}
+th{padding:0;background:#f5f7fa;border-bottom:1px solid var(--line)}
+th button{width:100%;border:0;background:none;text-align:left;padding:13px 18px;color:#586a7e;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+th button:hover{color:var(--teal-d)}
+th button.on{color:var(--navy)}
+th button .ar{margin-left:6px;color:var(--teal)}
+td{padding:15px 18px;border-bottom:1px solid #edf0f4;font-size:13px;vertical-align:middle}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:#f4fbfa}
+tbody tr:focus-visible{outline-offset:-2px}
+.ttl{min-width:270px;max-width:340px;font-weight:700;color:var(--navy);line-height:1.45}
+.au{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.au i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy2);color:#fff;font-style:normal;font-size:11px;font-weight:700}
+.yr{font-weight:700;color:#3a4a5c}
+.tag{display:inline-block;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap}
+.t-j{background:var(--teal-s);color:var(--teal-d)}.t-r{background:var(--amber-s);color:#85570f}.t-c{background:var(--indigo-s);color:var(--indigo)}
+.nw{white-space:nowrap;color:#3a4a5c}
+.doi{color:var(--teal-d);font-weight:600;text-decoration:none;white-space:nowrap}
+.doi:hover{text-decoration:underline}
+mark{background:#ffe9b3;color:inherit;border-radius:3px;padding:0 2px}
+.empty{display:none;text-align:center;padding:50px 20px;color:var(--muted);font-size:14px}
+.empty strong{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 24px;color:var(--muted);font-size:13px;background:#f9fafc}
+.pager{display:flex;gap:6px;align-items:center}
+.pager .btn{padding:7px 12px}
+.pager .btn.cur{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* Drawer */
+.veil{position:fixed;inset:0;background:rgba(11,29,51,.45);opacity:0;pointer-events:none;transition:.25s;z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:#fff;z-index:21;transform:translateX(100%);transition:transform .3s;padding:28px;overflow-y:auto;box-shadow:-20px 0 40px -20px rgba(0,0,0,.3)}
+body.open .veil{opacity:1;pointer-events:auto}
+body.open .drawer{transform:none}
+.drawer h3{font:600 22px/1.3 var(--serif);margin:14px 0 18px;color:var(--navy)}
+.close{float:right;border:1px solid var(--line);background:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:16px}
+.close:hover{background:var(--teal-s)}
+.dl{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.dl div{display:flex;justify-content:space-between;gap:16px;padding:13px 16px;font-size:13px;border-bottom:1px solid var(--line)}
+.dl div:last-child{border-bottom:0}
+.dl dt{color:var(--muted);font-weight:600}.dl dd{font-weight:700;text-align:right;word-break:break-word}
+.open-btn{display:block;text-align:center;margin-top:20px;background:var(--teal);color:#fff;text-decoration:none;font-weight:700;padding:13px;border-radius:12px}
+.open-btn:hover{background:var(--teal-d)}
+
+.toast{position:fixed;right:24px;bottom:24px;background:var(--navy);color:#fff;padding:13px 18px;border-radius:12px;font-size:13px;border-left:4px solid var(--amber);box-shadow:0 12px 30px -8px rgba(11,29,51,.5);transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s;z-index:30}
+.toast.show{transform:none;opacity:1}
+
+.scrape-panel {
+  padding: 0;
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.scrape-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  padding: 18px 24px;
+}
+
+.scrape-controls label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scrape-controls input {
+  min-width: 150px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--text);
+}
+
+.scrape-controls .scrape-query {
+  flex: 1;
+  min-width: 200px;
+}
+
+.scrape-controls .scrape-query input {
+  width: 100%;
+}
+
+.scrape-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+#scrape-start {
+  background: var(--teal);
+  color: white;
+  border-color: var(--teal);
+}
+
+.scrape-progress {
+  padding: 0 24px 16px;
+}
+
+.scrape-progress-track {
+  height: 10px;
+  overflow: hidden;
+  background: #e8edf2;
+  border-radius: 10px;
+}
+
+#scrape-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), #1ec2ae);
+  border-radius: inherit;
+  transition: width .25s ease;
+}
+
+.scrape-progress-label {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+#scrape-message {
+  padding: 0 24px 16px;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.scrape-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 24px;
+  background: #f9fafc;
+  border-top: 1px solid var(--line);
+}
+
+.scrape-metrics div {
+  display: grid;
+  gap: 5px;
+}
+
+.scrape-metrics small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.scrape-metrics strong {
+  color: var(--navy);
+  font-size: 20px;
+}
+
+@media(max-width:720px) {
+  .scrape-controls,
+  .scrape-progress {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .scrape-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 16px;
+  }
+}
+
+.sort-panel {
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 24px;
+  background: #f9fafc;
+  border-bottom: 1px solid var(--line);
+}
+
+.sort-controls label {
+  display: grid;
+  gap: 7px;
+  flex: 1;
+  min-width: 175px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sort-controls select {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.sort-controls button {
+  background: var(--teal);
+  color: white;
+  border-color: var(--teal);
+}
+
+.sort-controls button:hover:not(:disabled) {
+  background: var(--teal-d);
+  color: white;
+}
+
+.sort-message {
+  padding: 16px 24px 4px;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.sort-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+.sort-metrics div {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.sort-metrics small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.sort-metrics strong {
+  color: var(--navy);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.sort-complexity {
+  padding: 0 24px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sort-complexity strong {
+  color: var(--text);
+}
+
+.sort-complexity p {
+  margin-top: 5px;
+}
+
+@media(max-width:720px) {
+  .sort-controls,
+  .sort-metrics {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .sort-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sort-message {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+
+@media(max-width:1100px){.sidebar{width:210px}.main{padding:22px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.insights{grid-template-columns:1fr}}
+@media(max-width:720px){.sidebar{display:none}.main{padding:14px}.topbar h1{font-size:24px}.profile-t{display:none}.hero{padding:24px 20px}.hero h2{font-size:22px}.stats{gap:10px}.stat{padding:14px;gap:10px}.ico{width:38px;height:38px}.stat b{font-size:21px}.split{flex-direction:column;align-items:flex-start}.p-head,.toolbar,.foot{padding-left:16px;padding-right:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">R</div><div><h2>Research Explorer</h2><p>Academic discovery</p></div></div>
+    <p class="nav-label">Workspace</p>
+    <button class="nav-item" data-section="Dashboard"><span>▦</span> Dashboard</button>
+    <button class="nav-item active" data-section="Publications"><span>▤</span> Publications</button>
+    <button class="nav-item" data-section="Advanced Search"><span>⌕</span> Advanced Search</button>
+    <p class="nav-label">Tools</p>
+    <button class="nav-item" data-section="Sorting Lab"><span>⇅</span> Sorting Lab</button>
+    <button class="nav-item" data-section="Algorithm Benchmarks"><span>◷</span> Algorithm Benchmarks</button>
+    <button class="nav-item" data-section="Data Management"><span>▣</span> Data Management</button>
+    <div class="side-card">
+      <strong>Dataset progress</strong>
+      <p>14 of 15,000 records loaded in this preview.</p>
+      <div class="bar"><i></i></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="page-title">Publication Explorer</h1><p id="page-subtitle">Discover and analyze scholarly publications</p></div>
+      <div class="profile"><div class="avatar">R</div><div class="profile-t"><strong>Researcher</strong><small>Local workspace</small></div></div>
+    </header>
+
+    <section class="hero">
+      <span class="pill">Preview mode · sample data</span>
+      <h2>Find any of 15,000 scholarly papers, then time how fast each algorithm finds it</h2>
+      <p>Browse Crossref metadata, filter by year and type, and get ready to benchmark searching and sorting.</p>
+      <div class="hero-search">
+        <input type="search" id="hero-input" placeholder="Search title, author, DOI or publisher" aria-label="Quick search">
+        <button id="hero-go">Search</button>
+      </div>
+    </section>
+
+<section class="card scrape-panel">
+  <div class="p-head">
+    <div>
+      <h2>Crossref Scraping Controls</h2>
+      <p>Collect additional scholarly records from Crossref.</p>
+    </div>
+    <span class="chip" id="scrape-state">Idle</span>
+  </div>
+
+  <div class="scrape-controls">
+    <label>
+      Record limit (1–5,000)
+      <input id="scrape-limit" type="number"
+             min="1" max="5000" value="100">
+    </label>
+
+    <label class="scrape-query">
+      Optional search topic
+      <input id="scrape-query" type="text"
+             maxlength="200"
+             placeholder="e.g. machine learning">
+    </label>
+
+    <div class="scrape-buttons">
+      <button class="btn" id="scrape-start">Start</button>
+      <button class="btn" id="scrape-pause" disabled>Pause</button>
+      <button class="btn" id="scrape-resume" disabled>Resume</button>
+      <button class="btn" id="scrape-stop" disabled>Stop</button>
+    </div>
+  </div>
+
+  <div class="scrape-progress">
+    <div class="scrape-progress-track">
+      <div id="scrape-progress-bar"></div>
+    </div>
+    <div class="scrape-progress-label">
+      <span id="scrape-progress-text">0% — Waiting to start</span>
+      <span id="scrape-count">0 / 0 processed</span>
+    </div>
+  </div>
+
+  <p id="scrape-message" role="status">
+    Ready to collect records.
+  </p>
+
+  <div class="scrape-metrics">
+    <div><small>New records</small><strong id="scrape-added">0</strong></div>
+    <div><small>Duplicates skipped</small><strong id="scrape-duplicates">0</strong></div>
+    <div><small>Errors</small><strong id="scrape-errors">0</strong></div>
+    <div><small>Records loaded</small><strong id="scrape-dataset">15,000</strong></div>
+  </div>
+</section>
+
+    <section class="stats">
+      <div class="stat"><div class="ico">▤</div><div><small>Dataset target</small><b>15,000</b></div></div>
+      <div class="stat"><div class="ico">◎</div><div><small>Data source</small><b>Crossref</b></div></div>
+      <div class="stat"><div class="ico">▦</div><div><small>Dataset fields</small><b>11</b></div></div>
+      <div class="stat"><div class="ico">✓</div><div><small>Interface</small><b>Ready</b></div></div>
+    </section>
+
+    <section class="insights">
+      <div class="card insight">
+        <h3>Papers by year</h3><p id="bars-note">Matches your current filters</p>
+        <div class="bars" id="bars"></div>
+        <div class="years" id="years"></div>
+      </div>
+      <div class="card insight">
+        <h3>Paper types</h3><p>Share of matching papers</p>
+        <div class="split"><div class="donut" id="donut"></div><ul class="legend" id="legend"></ul></div>
+      </div>
+    </section>
+
+<section class="card sort-panel" id="sorting-lab">
+  <div class="p-head">
+    <div>
+      <h2>Sorting Lab</h2>
+      <p>Choose an algorithm and sort your research dataset.</p>
+    </div>
+    <span class="chip">Custom algorithms</span>
+  </div>
+
+  <div class="sort-controls">
+    <label>
+      Column
+      <select id="sort-key">
+        <option>Title</option>
+        <option>Authors</option>
+        <option>DOI</option>
+        <option>Publisher</option>
+        <option>Publication Year</option>
+        <option>Publication Type</option>
+        <option>Journal / Container Title</option>
+        <option>References Count</option>
+        <option>Cited-by Count</option>
+        <option>Author Count</option>
+        <option>Title Word Count</option>
+      </select>
+    </label>
+
+    <label>
+      Algorithm
+      <select id="sort-algorithm">
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="merge">Merge Sort</option>
+        <option value="quick" selected>Quick Sort</option>
+        <option value="radix">Radix Sort — numeric only</option>
+        <option value="bucket">Bucket Sort — numeric only</option>
+        <option value="heap">Heap Sort</option>
+        <option value="shell">Shell Sort</option>
+        <option value="hybrid">Hybrid Merge-Insertion Sort</option>
+      </select>
+    </label>
+
+    <label>
+      Direction
+      <select id="sort-direction">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+    </label>
+
+    <button class="btn" id="run-sort">Run Sort</button>
+  </div>
+
+  <p id="sort-message" class="sort-message" role="status">
+    Select a column and algorithm to begin.
+  </p>
+
+  <div class="sort-metrics">
+    <div><small>Comparisons</small><strong id="sort-comparisons">—</strong></div>
+    <div><small>Swaps / moves</small><strong id="sort-swaps">—</strong></div>
+    <div><small>Execution time</small><strong id="sort-time">—</strong></div>
+    <div><small>Stability</small><strong id="sort-stability">—</strong></div>
+  </div>
+
+  <div class="sort-complexity">
+    <strong>Time complexity</strong>
+    <p id="sort-complexity">Run an algorithm to see its complexity.</p>
+  </div>
+</section>
+
+    <section class="card panel">
+      <div class="p-head">
+        <div><h2>Publications</h2><p>Select a row to see full details</p></div>
+        <span class="chip">Sample records</span>
+      </div>
+      <div class="toolbar">
+        <div class="sbox"><span>⌕</span><input type="search" id="search-input" placeholder="Filter by title, author, DOI or publisher" aria-label="Search sample publications"></div>
+        <select id="year-filter" aria-label="Filter by year"><option value="">All years</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option></select>
+        <select id="type-filter" aria-label="Filter by type"><option value="">All types</option><option>Journal Article</option><option>Review</option><option>Conference Paper</option></select>
+        <button class="btn" id="reset-button">Reset</button>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead><tr id="head"></tr></thead>
+          <tbody id="publication-body"></tbody>
+        </table>
+        <div class="empty" id="empty-state"><strong>No papers match your search</strong>Try a different keyword or reset the filters.</div>
+      </div>
+      <div class="foot"><span id="result-count"></span><div class="pager" id="pager"></div></div>
+    </section>
+  </main>
+</div>
+
+<div class="veil" id="veil"></div>
+<aside class="drawer" id="drawer" aria-label="Paper details" aria-hidden="true"></aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// Demonstration records only. Replace with the real CSV dataset in the next step.
+const API = "/api/publications";
+const PAGE_SIZE = 50;
+
+const $ = id => document.getElementById(id);
+
+let page = 1;
+let totalPages = 1;
+let totalRecords = 0;
+let papers = [];
+let sortKey = "Title";
+let sortDir = 1;
+let serverSortActive = false;
+let searchTimer;
+
+const fields = [
+  ["Title", "Title"],
+  ["Authors", "Authors"],
+  ["Publication Year", "Year"],
+  ["Publication Type", "Type"],
+  ["Publisher", "Publisher"],
+  ["DOI", "DOI"]
+];
+
+const typeClass = type => {
+  const t = String(type || "").toLowerCase();
+  if (t.includes("journal")) return "t-j";
+  if (t.includes("review")) return "t-r";
+  return "t-c";
+};
+const SORT_INFO = {
+  bubble:    { name: "Bubble Sort", complexity: "Best O(n), Average/Worst O(n²)", stable: "Yes" },
+  selection: { name: "Selection Sort", complexity: "Best/Average/Worst O(n²)", stable: "No" },
+  insertion: { name: "Insertion Sort", complexity: "Best O(n), Average/Worst O(n²)", stable: "Yes" },
+  merge:     { name: "Merge Sort", complexity: "Best/Average/Worst O(n log n)", stable: "Yes" },
+  quick:     { name: "Quick Sort", complexity: "Best/Average O(n log n), Worst O(n²)", stable: "No" },
+  radix:     { name: "Radix Sort", complexity: "O(d(n + b)); numeric values only", stable: "Yes" },
+  bucket:    { name: "Bucket Sort", complexity: "Average O(n + k), Worst O(n²); numeric values only", stable: "Yes" },
+  heap:      { name: "Heap Sort", complexity: "Best/Average/Worst O(n log n)", stable: "No" },
+  shell:     { name: "Shell Sort", complexity: "Depends on gap sequence; worst O(n²) for this implementation", stable: "No" },
+  hybrid:    { name: "Hybrid Merge-Insertion Sort", complexity: "O(n log n)", stable: "Yes" }
+};
+
+function runTrackedSort(input, algorithm, key, direction) {
+  const arr = input.map((value, index) => ({
+    value,
+    originalIndex: index
+  }));
+
+  let comparisons = 0;
+  let swaps = 0;
+  let moves = 0;
+
+  const sign = direction === "desc" ? -1 : 1;
+
+  function compare(a, b) {
+    comparisons++;
+
+    let x = a.value[key];
+    let y = b.value[key];
+
+    if (x === null || x === undefined) x = "";
+    if (y === null || y === undefined) y = "";
+
+    const numeric = key === "Publication Year" ||
+      key === "References Count" ||
+      key === "Cited-by Count" ||
+      key === "Author Count" ||
+      key === "Title Word Count";
+
+    let result;
+
+    if (numeric && x !== "" && y !== "") {
+      result = Number(x) - Number(y);
+    } else {
+      result = String(x).localeCompare(String(y), undefined, {
+        numeric: true,
+        sensitivity: "base"
+      });
+    }
+
+    return result === 0
+      ? a.originalIndex - b.originalIndex
+      : result * sign;
+  }
+
+  function swap(i, j) {
+    if (i === j) return;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    swaps++;
+  }
+
+  function insertionSortRange(left, right) {
+    for (let i = left + 1; i <= right; i++) {
+      const current = arr[i];
+      let j = i - 1;
+
+      while (j >= left && compare(arr[j], current) > 0) {
+        arr[j + 1] = arr[j];
+        moves++;
+        j--;
+      }
+
+      arr[j + 1] = current;
+      moves++;
+    }
+  }
+
+  function mergeRange(left, mid, right) {
+    const first = arr.slice(left, mid + 1);
+    const second = arr.slice(mid + 1, right + 1);
+    let i = 0, j = 0, k = left;
+
+    while (i < first.length && j < second.length) {
+      if (compare(first[i], second[j]) <= 0) {
+        arr[k++] = first[i++];
+      } else {
+        arr[k++] = second[j++];
+      }
+      moves++;
+    }
+
+    while (i < first.length) {
+      arr[k++] = first[i++];
+      moves++;
+    }
+
+    while (j < second.length) {
+      arr[k++] = second[j++];
+      moves++;
+    }
+  }
+
+  function mergeSortRange(left, right) {
+    if (left >= right) return;
+    const mid = Math.floor((left + right) / 2);
+    mergeSortRange(left, mid);
+    mergeSortRange(mid + 1, right);
+    mergeRange(left, mid, right);
+  }
+
+  function quickSortRange(left, right) {
+    if (left >= right) return;
+
+    const pivot = arr[Math.floor((left + right) / 2)];
+    let i = left, j = right;
+
+    while (i <= j) {
+      while (compare(arr[i], pivot) < 0) i++;
+      while (compare(arr[j], pivot) > 0) j--;
+
+      if (i <= j) {
+        swap(i, j);
+        i++;
+        j--;
+      }
+    }
+
+    if (left < j) quickSortRange(left, j);
+    if (i < right) quickSortRange(i, right);
+  }
+
+  function heapSort() {
+    function siftDown(size, root) {
+      while (true) {
+        let largest = root;
+        const left = 2 * root + 1;
+        const right = left + 1;
+
+        if (left < size && compare(arr[left], arr[largest]) > 0)
+          largest = left;
+
+        if (right < size && compare(arr[right], arr[largest]) > 0)
+          largest = right;
+
+        if (largest === root) return;
+
+        swap(root, largest);
+        root = largest;
+      }
+    }
+
+    for (let i = Math.floor(arr.length / 2) - 1; i >= 0; i--)
+      siftDown(arr.length, i);
+
+    for (let end = arr.length - 1; end > 0; end--) {
+      swap(0, end);
+      siftDown(end, 0);
+    }
+
+    // Heap construction produces ascending order under compare().
+    // Reverse for descending order when needed.
+    if (sign < 0) arr.reverse();
+  }
+
+  function radixSort() {
+    const numbers = arr.map(item => Number(item.value[key]));
+
+    if (numbers.some(n => !Number.isSafeInteger(n) || n < 0))
+      throw new Error("Radix Sort requires non-negative whole-number values.");
+
+    if (arr.length < 2) return;
+
+    let max = Math.max(...numbers);
+
+    for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
+      const output = new Array(arr.length);
+      const counts = new Array(10).fill(0);
+
+      for (const item of arr) {
+        const digit = Math.floor(Number(item.value[key]) / exp) % 10;
+        counts[digit]++;
+        moves++;
+      }
+
+      for (let i = 1; i < 10; i++) counts[i] += counts[i - 1];
+
+      for (let i = arr.length - 1; i >= 0; i--) {
+        const digit = Math.floor(Number(arr[i].value[key]) / exp) % 10;
+        output[--counts[digit]] = arr[i];
+        moves++;
+      }
+
+      for (let i = 0; i < arr.length; i++) arr[i] = output[i];
+
+      if (exp > Math.floor(max / 10)) break;
+    }
+
+    if (sign < 0) arr.reverse();
+  }
+
+  function bucketSort() {
+    const nums = arr.map(item => Number(item.value[key]));
+
+    if (nums.some(n => !Number.isFinite(n)))
+      throw new Error("Bucket Sort requires numeric values.");
+
+    if (arr.length < 2) return;
+
+    const min = Math.min(...nums);
+    const max = Math.max(...nums);
+
+    if (min === max) return;
+
+    const count = Math.max(1, Math.ceil(Math.sqrt(arr.length)));
+    const buckets = Array.from({ length: count }, () => []);
+
+    for (const item of arr) {
+      const n = Number(item.value[key]);
+      const index = Math.min(
+        count - 1,
+        Math.floor(((n - min) / (max - min)) * count)
+      );
+      buckets[index].push(item);
+      moves++;
+    }
+
+    const result = [];
+
+    for (const bucket of buckets) {
+      bucket.sort((a, b) => compare(a, b));
+      result.push(...bucket);
+      moves += bucket.length;
+    }
+
+    for (let i = 0; i < arr.length; i++) arr[i] = result[i];
+  }
+
+  const start = performance.now();
+
+  switch (algorithm) {
+    case "bubble":
+      for (let end = arr.length - 1; end > 0; end--) {
+        let changed = false;
+
+        for (let i = 0; i < end; i++) {
+          if (compare(arr[i], arr[i + 1]) > 0) {
+            swap(i, i + 1);
+            changed = true;
+          }
+        }
+
+        if (!changed) break;
+      }
+      break;
+
+    case "selection":
+      for (let i = 0; i < arr.length - 1; i++) {
+        let best = i;
+
+        for (let j = i + 1; j < arr.length; j++) {
+          if (compare(arr[j], arr[best]) < 0) best = j;
+        }
+
+        swap(i, best);
+      }
+      break;
+
+    case "insertion":
+      insertionSortRange(0, arr.length - 1);
+      break;
+
+    case "merge":
+      mergeSortRange(0, arr.length - 1);
+      break;
+
+    case "quick":
+      quickSortRange(0, arr.length - 1);
+      break;
+
+    case "heap":
+      heapSort();
+      break;
+
+    case "shell":
+      for (let gap = Math.floor(arr.length / 2); gap > 0; gap = Math.floor(gap / 2)) {
+        for (let i = gap; i < arr.length; i++) {
+          const current = arr[i];
+          let j = i;
+
+          while (j >= gap && compare(arr[j - gap], current) > 0) {
+            arr[j] = arr[j - gap];
+            moves++;
+            j -= gap;
+          }
+
+          arr[j] = current;
+          moves++;
+        }
+      }
+      break;
+
+    case "hybrid":
+      function hybridSort(left, right) {
+        if (right - left < 16) {
+          insertionSortRange(left, right);
+          return;
+        }
+
+        const mid = Math.floor((left + right) / 2);
+        hybridSort(left, mid);
+        hybridSort(mid + 1, right);
+        mergeRange(left, mid, right);
+      }
+
+      hybridSort(0, arr.length - 1);
+      break;
+
+    case "radix":
+      radixSort();
+      break;
+
+    case "bucket":
+      bucketSort();
+      break;
+
+    default:
+      throw new Error("Unknown sorting algorithm.");
+  }
+
+  const elapsed = performance.now() - start;
+
+  return {
+    results: arr.map(item => item.value),
+    comparisons,
+    swaps,
+    moves,
+    elapsed,
+    info: SORT_INFO[algorithm]
+  };
+}
+
+function connectRunSortButton() {
+  const runButton = $("run-sort");
+
+  if (!runButton) {
+    console.error("Run Sort button was not found.");
+    return;
+  }
+
+  runButton.addEventListener("click", () => {
+    const message = $("sort-message");
+    const algorithmSelect = $("sort-algorithm");
+    const directionSelect = $("sort-direction");
+
+    if (!papers.length) {
+      message.textContent = "No publications are loaded. Please load the publications first.";
+      return;
+    }
+
+    const algorithm = algorithmSelect.value;
+    const direction = directionSelect.value;
+
+    // Use the column selected in the Sorting Lab.
+const column = $("sort-key").value;
+
+    try {
+      const result = runTrackedSort(
+        papers,
+        algorithm,
+        column,
+        direction
+      );
+
+      // Show the sorting metrics.
+      $("sort-comparisons").textContent =
+        result.comparisons.toLocaleString();
+
+      $("sort-swaps").textContent =
+        (result.swaps + result.moves).toLocaleString();
+
+      $("sort-time").textContent =
+        result.elapsed.toFixed(3) + " ms";
+
+      $("sort-stability").textContent =
+        result.info.stable;
+
+      $("sort-complexity").textContent =
+        result.info.complexity;
+
+      // Display the sorted records in the existing table.
+      console.log("Selected algorithm:", algorithm);
+console.log("Sorting column:", column);
+console.log(
+  "BEFORE:",
+  JSON.stringify(papers.slice(0, 5).map(p => p[column]))
+);
+
+console.log(
+  "AFTER:",
+  JSON.stringify(result.results.slice(0, 5).map(p => p[column]))
+);
+console.log(
+  "Is order different?",
+  papers.some((p, i) => p !== result.results[i])
+);
+      // Save the sorted records in their new order.
+papers = result.results;
+
+// Prevent renderTable() from sorting them again.
+sortKey = "";
+serverSortActive = true;
+
+renderTable();
+
+      message.textContent =
+        result.info.name + " completed successfully using the " +
+        column + " column.";
+
+      console.log("Sorting completed:", result);
+    } catch (error) {
+      console.error("Sorting failed:", error);
+      message.textContent =
+        "Sorting failed: " + error.message;
+    }
+  });
+}
+
+function getParams() {
+  const params = new URLSearchParams();
+  const q = $("search-input").value.trim();
+  const year = $("year-filter").value;
+  const type = $("type-filter").value;
+
+  if (q) params.set("q", q);
+  if (year) params.set("year", year);
+  if (type) params.set("type", type);
+
+  params.set("page", page);
+  return params;
+}
+
+async function loadPublications() {
+  const tbody = $("publication-body");
+  tbody.replaceChildren();
+
+  tbody.append(
+    Object.assign(document.createElement("tr"), {
+      innerHTML: '<td colspan="6" style="padding:30px;text-align:center">Loading publications...</td>'
+    })
+  );
+
+  try {
+    const response = await fetch(`${API}?${getParams()}`);
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
+    const data = await response.json();
+papers = data.results || [];
+serverSortActive = false;
+    
+    totalRecords = data.total_records || 0;
+    totalPages = Math.max(1, data.total_pages || 1);
+    page = data.page || page;
+
+    renderTable();
+    renderPagination();
+    renderCharts();
+
+    $("result-count").textContent = totalRecords
+      ? `Showing ${(page - 1) * PAGE_SIZE + 1}–${(page - 1) * PAGE_SIZE + papers.length} of ${totalRecords.toLocaleString()} publications`
+      : "No publications found";
+
+    $("empty-state").style.display =
+      totalRecords === 0 ? "block" : "none";
+
+    const chip = document.querySelector(".chip");
+    if (chip) chip.textContent = "Live dataset";
+
+    const note = document.querySelector(".p-head p");
+    if (note) note.textContent = "Real publications from your Crossref CSV dataset";
+
+  } catch (error) {
+    tbody.replaceChildren();
+    $("empty-state").style.display = "block";
+    $("empty-state").innerHTML =
+      "<strong>Could not load publications</strong>Check that app.py is running and try again.";
+    $("result-count").textContent = error.message;
+    console.error("Publication loading error:", error);
+  }
+}
+
+function renderTable() {
+  const head = $("head");
+  const tbody = $("publication-body");
+  head.replaceChildren();
+  tbody.replaceChildren();
+
+  fields.forEach(([key, label]) => {
+    const th = document.createElement("th");
+    const button = document.createElement("button");
+    button.className = key === sortKey ? "on" : "";
+    button.textContent =
+      label + (key === sortKey ? (sortDir === 1 ? " ▲" : " ▼") : " ⇅");
+
+    button.onclick = () => {
+      if (sortKey === key) {
+        sortDir *= -1;
+      } else {
+        sortKey = key;
+        sortDir = 1;
+      }
+      renderTable();
+    };
+
+    th.append(button);
+    head.append(th);
+  });
+
+  
+const sorted = serverSortActive
+  ? [...papers]
+  : sortKey === ""
+    ? [...papers]
+    : [...papers].sort((a, b) => {
+        let x = a[sortKey] ?? "";
+        let y = b[sortKey] ?? "";
+
+        if (
+          sortKey === "Publication Year" ||
+          sortKey === "References Count" ||
+          sortKey === "Cited-by Count" ||
+          sortKey === "Author Count" ||
+          sortKey === "Title Word Count"
+        ) {
+          return (Number(x) - Number(y)) * sortDir;
+        }
+
+        return String(x).localeCompare(
+          String(y),
+          undefined,
+          { numeric: true, sensitivity: "base" }
+        ) * sortDir;
+      });
+
+
+  sorted.forEach(paper => {
+    const tr = document.createElement("tr");
+    tr.tabIndex = 0;
+
+    fields.forEach(([key]) => {
+      const td = document.createElement("td");
+      const value = paper[key] ?? "Not available";
+
+      if (key === "Title") {
+        td.className = "ttl";
+        td.textContent = value;
+      } else if (key === "Authors") {
+        const author = document.createElement("div");
+        author.className = "au";
+
+        const avatar = document.createElement("i");
+        avatar.textContent = String(value)[0] || "?";
+
+        const name = document.createElement("span");
+        name.textContent = value;
+
+        author.append(avatar, name);
+        td.append(author);
+      } else if (key === "Publication Year") {
+        td.className = "yr";
+        td.textContent = value;
+      } else if (key === "Publication Type") {
+        const tag = document.createElement("span");
+        tag.className = `tag ${typeClass(value)}`;
+        tag.textContent = value;
+        td.append(tag);
+      } else if (key === "DOI" && value !== "Not available") {
+        const link = document.createElement("a");
+        link.className = "doi";
+        link.textContent = value;
+        link.href = "https://doi.org/" + encodeURIComponent(value);
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.onclick = event => event.stopPropagation();
+        td.append(link);
+      } else {
+        td.className = "nw";
+        td.textContent = value;
+      }
+
+      tr.append(td);
+    });
+
+    tr.onclick = () => openDrawer(paper);
+    tr.onkeydown = event => {
+      if (event.key === "Enter") openDrawer(paper);
+    };
+
+    tbody.append(tr);
+  });
+}
+
+function renderPagination() {
+  const pager = $("pager");
+  pager.replaceChildren();
+
+  function addButton(label, target, disabled, active = false) {
+    const button = document.createElement("button");
+    button.className = "btn" + (active ? " cur" : "");
+    button.textContent = label;
+    button.disabled = disabled;
+
+    button.onclick = () => {
+      serverSortActive = false;
+      page = target;
+      loadPublications();
+    };
+
+    pager.append(button);
+  }
+
+  addButton("Prev", page - 1, page <= 1);
+
+  const start = Math.max(1, page - 2);
+  const end = Math.min(totalPages, page + 2);
+
+  for (let n = start; n <= end; n++) {
+    addButton(String(n), n, false, n === page);
+  }
+
+  addButton("Next", page + 1, page >= totalPages);
+}
+
+function renderCharts() {
+  // These charts describe the currently loaded page, not the whole dataset.
+  const years = [2021, 2022, 2023, 2024];
+  const counts = years.map(y =>
+    papers.filter(p => Number(p["Publication Year"]) === y).length
+  );
+
+  const max = Math.max(1, ...counts);
+  $("bars").replaceChildren();
+
+  counts.forEach((count, i) => {
+    const col = document.createElement("div");
+    col.className = "col";
+
+    const number = document.createElement("span");
+    number.textContent = count;
+
+    const bar = document.createElement("i");
+    bar.style.height = (count / max * 78) + "%";
+
+    col.append(number, bar);
+    $("bars").append(col);
+  });
+
+  $("years").replaceChildren(
+    ...years.map(y => {
+      const span = document.createElement("span");
+      span.textContent = y;
+      return span;
+    })
+  );
+
+  const types = [...new Set(
+    papers.map(p => p["Publication Type"] || "Unknown")
+  )];
+
+  const countsByType = types.map(t =>
+    papers.filter(p => (p["Publication Type"] || "Unknown") === t).length
+  );
+
+  const colors = ["#12a594", "#f0a935", "#3f5fa8", "#7b8a9a"];
+  let angle = 0;
+
+  const stops = countsByType.map((count, i) => {
+    const start = angle;
+    angle += papers.length ? count / papers.length * 100 : 0;
+    return `${colors[i % colors.length]} ${start}% ${angle}%`;
+  });
+
+  $("donut").style.background = papers.length
+    ? `conic-gradient(${stops.join(",")})`
+    : "#e0e6ee";
+
+  $("donut").dataset.total = papers.length;
+  $("legend").replaceChildren();
+
+  types.forEach((type, i) => {
+    const li = document.createElement("li");
+    const marker = document.createElement("i");
+    marker.style.background = colors[i % colors.length];
+
+    const label = document.createElement("span");
+    label.textContent = type;
+
+    const number = document.createElement("b");
+    number.textContent = countsByType[i];
+
+    li.append(marker, label, number);
+    $("legend").append(li);
+  });
+
+  const note = $("bars-note");
+  if (note) note.textContent = "Counts on the current page only";
+}
+
+
+async function openDrawer(paper) {
+  const drawer = $("drawer");
+  drawer.replaceChildren();
+
+  const close = document.createElement("button");
+  close.className = "close";
+  close.textContent = "×";
+  close.setAttribute("aria-label", "Close details");
+  close.onclick = closeDrawer;
+
+  drawer.append(close);
+
+  const loading = document.createElement("p");
+  loading.textContent = "Loading publication details...";
+  drawer.append(loading);
+
+  document.body.classList.add("open");
+  drawer.setAttribute("aria-hidden", "false");
+
+  try {
+    let fullPaper = paper;
+
+    if (paper.DOI) {
+      const response = await fetch(
+        "/api/paper?doi=" + encodeURIComponent(paper.DOI)
+      );
+
+      if (!response.ok) {
+        throw new Error("Could not load publication details.");
+      }
+
+      const data = await response.json();
+      fullPaper = data.paper;
+    }
+
+    drawer.replaceChildren();
+    drawer.append(close);
+
+    const tag = document.createElement("span");
+    tag.className =
+      `tag ${typeClass(fullPaper["Publication Type"])}`;
+    tag.textContent =
+      fullPaper["Publication Type"] || "Unknown";
+
+    const title = document.createElement("h3");
+    title.textContent =
+      fullPaper.Title || "Untitled publication";
+
+    const dl = document.createElement("dl");
+    dl.className = "dl";
+
+    const details = [
+      ["Authors", fullPaper.Authors],
+      ["Publication Year", fullPaper["Publication Year"]],
+      ["Publisher", fullPaper.Publisher],
+      ["Journal", fullPaper["Journal / Container Title"]],
+      ["DOI", fullPaper.DOI],
+      ["References", fullPaper["References Count"]],
+      ["Citations", fullPaper["Cited-by Count"]],
+      ["Author Count", fullPaper["Author Count"]],
+      ["Title Word Count", fullPaper["Title Word Count"]]
+    ];
+
+    details.forEach(([label, value]) => {
+      const row = document.createElement("div");
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+
+      dt.textContent = label;
+      dd.textContent =
+        value === undefined || value === null || value === ""
+          ? "Not available"
+          : value;
+
+      row.append(dt, dd);
+      dl.append(row);
+    });
+
+    drawer.append(tag, title, dl);
+
+    if (fullPaper.DOI) {
+      const link = document.createElement("a");
+      link.className = "open-btn";
+      link.textContent = "Open publication on doi.org";
+      link.href =
+        "https://doi.org/" + encodeURIComponent(fullPaper.DOI);
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      drawer.append(link);
+    }
+  } catch (error) {
+    drawer.replaceChildren();
+    drawer.append(close);
+
+    const message = document.createElement("p");
+    message.textContent =
+      "Unable to load details. Please check that the server is running and try again.";
+    drawer.append(message);
+
+    console.error("Paper details error:", error);
+  }
+}
+
+
+
+function closeDrawer() {
+  document.body.classList.remove("open");
+  $("drawer").setAttribute("aria-hidden", "true");
+}
+
+$("veil").onclick = closeDrawer;
+
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeDrawer();
+});
+
+function runSearch() {
+  page = 1;
+  loadPublications();
+}
+
+$("search-input").addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(runSearch, 350);
+});
+
+$("year-filter").addEventListener("change", runSearch);
+$("type-filter").addEventListener("change", runSearch);
+
+$("reset-button").onclick = () => {
+  serverSortActive = false;
+  $("search-input").value = "";
+  $("hero-input").value = "";
+  $("year-filter").value = "";
+  $("type-filter").value = "";
+  page = 1;
+  sortKey = "Title";
+  sortDir = 1;
+  loadPublications();
+};
+
+function heroSearch() {
+  $("search-input").value = $("hero-input").value;
+  page = 1;
+  loadPublications();
+
+  document.querySelector(".panel").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+$("hero-go").onclick = heroSearch;
+
+$("hero-input").addEventListener("keydown", event => {
+  if (event.key === "Enter") heroSearch();
+});
+
+document.querySelectorAll(".nav-item").forEach(button => {
+  button.onclick = () => {
+    document.querySelectorAll(".nav-item")
+      .forEach(item => item.classList.remove("active"));
+
+    button.classList.add("active");
+
+    const section = button.dataset.section;
+    const isPublications = section === "Publications";
+
+    $("page-title").textContent =
+      isPublications ? "Publication Explorer" : section;
+
+    $("page-subtitle").textContent =
+      isPublications
+        ? "Discover and analyze scholarly publications"
+        : "This workspace section will be developed in a later module";
+  };
+});
+
+async function loadFilterOptions() {
+  try {
+    const response = await fetch("/api/stats");
+    if (!response.ok) return;
+
+    const stats = await response.json();
+
+    if (Array.isArray(stats.years) && stats.years.length) {
+      const select = $("year-filter");
+      select.replaceChildren(new Option("All years", ""));
+
+      stats.years.forEach(year => {
+        select.add(new Option(String(year), String(year)));
+      });
+    }
+
+    if (Array.isArray(stats.types) && stats.types.length) {
+      const select = $("type-filter");
+      select.replaceChildren(new Option("All types", ""));
+
+      stats.types.forEach(type => {
+        select.add(new Option(type, type));
+      });
+    }
+  } catch (error) {
+    console.warn("Filter options unavailable; using existing options.", error);
+  }
+}
+
+let lastScrapeDatasetCount = null;
+
+async function scrapeAction(action) {
+  const message = $("scrape-message");
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  };
+
+  if (action === "start") {
+    const limit = Number($("scrape-limit").value);
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > 5000) {
+      message.textContent = "Enter a whole-number limit from 1 to 5,000.";
+      return;
+    }
+
+    options.body = JSON.stringify({
+      limit,
+      query: $("scrape-query").value.trim()
+    });
+  }
+
+  try {
+    const response = await fetch(`/api/scraper/${action}`, options);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `Request failed (${response.status})`);
+    }
+
+    message.textContent = data.message || "Request completed.";
+    await refreshScraperStatus();
+  } catch (error) {
+    message.textContent = `Scraper error: ${error.message}`;
+  }
+}
+
+async function refreshScraperStatus() {
+  try {
+    const response = await fetch("/api/scraper/status");
+
+    if (!response.ok) {
+      throw new Error("Could not read scraper status.");
+    }
+
+    const s = await response.json();
+
+    $("scrape-state").textContent =
+      s.state.charAt(0).toUpperCase() + s.state.slice(1);
+
+    $("scrape-progress-bar").style.width = `${s.progress}%`;
+    $("scrape-progress-text").textContent =
+      `${s.progress}% — ${s.state}`;
+    $("scrape-count").textContent =
+      `${s.processed.toLocaleString()} / ${s.target.toLocaleString()} processed`;
+
+    $("scrape-added").textContent = s.added.toLocaleString();
+    $("scrape-duplicates").textContent = s.duplicates.toLocaleString();
+    $("scrape-errors").textContent = s.errors.toLocaleString();
+    $("scrape-dataset").textContent = s.dataset_records.toLocaleString();
+
+    $("scrape-message").textContent = s.message;
+
+    const active = ["starting", "running", "paused"].includes(s.state);
+
+    $("scrape-start").disabled = active;
+    $("scrape-pause").disabled = s.state !== "running";
+    $("scrape-resume").disabled = s.state !== "paused";
+    $("scrape-stop").disabled = !active;
+
+    // Refresh the table when the in-memory dataset grows.
+    if (
+      lastScrapeDatasetCount !== null &&
+      lastScrapeDatasetCount !== s.dataset_records
+    ) {
+      await loadPublications();
+    }
+
+    lastScrapeDatasetCount = s.dataset_records;
+  } catch (error) {
+    $("scrape-message").textContent =
+      `Could not update scraper status: ${error.message}`;
+  }
+}
+
+$("scrape-start").onclick = () => scrapeAction("start");
+$("scrape-pause").onclick = () => scrapeAction("pause");
+$("scrape-resume").onclick = () => scrapeAction("resume");
+$("scrape-stop").onclick = () => scrapeAction("stop");
+
+// Keep progress and controls updated while scraping.
+refreshScraperStatus();
+setInterval(refreshScraperStatus, 1500);
+
+async function startApp() {
+  connectRunSortButton();
+  await loadFilterOptions();
+  await loadPublications();
+}
+
+startApp();
+
+</script>
+</body>
+</html>
